@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AF Management Algorithm — Emergency Medicine (Australia) | ESC/EACTS 2024</title>
+<style>
+:root{--navy:#1a2744;--blue:#2563eb;--light-blue:#dbeafe;--red:#dc2626;--red-bg:#fef2f2;--amber:#d97706;--amber-bg:#fffbeb;--green:#16a34a;--green-bg:#f0fdf4;--purple:#7c3aed;--purple-bg:#f5f3ff;--gray:#6b7280;--gray-light:#f3f4f6;--border:#e5e7eb;--white:#fff;--text:#1f2937;--text-light:#4b5563;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--text);background:#f9fafb;line-height:1.6;font-size:15px;}
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--navy);color:#fff;overflow-y:auto;z-index:1000;transition:transform .3s;}
+.sidebar h2{padding:20px;font-size:16px;border-bottom:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.2);}
+.sidebar h2 span{display:block;font-size:11px;font-weight:400;opacity:.7;margin-top:4px;}
+.nav-section{padding:4px 0;}
+.nav-section a{display:block;padding:8px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;border-left:3px solid transparent;transition:all .15s;}
+.nav-section a:hover,.nav-section a.active{background:rgba(255,255,255,.1);color:#fff;border-left-color:var(--blue);}
+.nav-section .nav-group{font-size:11px;text-transform:uppercase;letter-spacing:1px;padding:12px 20px 4px;color:rgba(255,255,255,.4);font-weight:600;}
+/* MAIN */
+.main{margin-left:280px;padding:30px 40px 60px;}
+@media(max-width:900px){.sidebar{transform:translateX(-100%);}.sidebar.open{transform:translateX(0);}.main{margin-left:0;padding:20px;}.menu-btn{display:block !important;}}
+.menu-btn{display:none;position:fixed;top:10px;left:10px;z-index:1001;background:var(--navy);color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:18px;}
+/* SECTIONS */
+.section{max-width:1100px;margin:0 auto 40px;background:var(--white);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid var(--border);overflow:hidden;}
+.section-header{background:var(--navy);color:#fff;padding:16px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+.section-header h3{font-size:17px;font-weight:600;}
+.section-header .toggle{font-size:20px;font-weight:700;transition:transform .2s;}
+.section-header.collapsed .toggle{transform:rotate(-90deg);}
+.section-body{padding:24px;display:block;}
+.section-body.hidden{display:none;}
+/* FLOWCHART */
+.flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:20px 0;}
+.flow-row{display:flex;justify-content:center;align-items:flex-start;gap:16px;flex-wrap:wrap;width:100%;}
+.flow-box{border-radius:10px;padding:12px 18px;text-align:center;font-size:13px;font-weight:500;min-width:160px;max-width:280px;position:relative;line-height:1.4;}
+.flow-box.decision{background:#fef9c3;border:2px solid #eab308;border-radius:50%;width:120px;height:120px;display:flex;align-items:center;justify-content:center;min-width:unset;padding:10px;}
+.flow-box.action{background:var(--light-blue);border:2px solid var(--blue);}
+.flow-box.urgent{background:var(--red-bg);border:2px solid var(--red);color:var(--red);}
+.flow-box.success{background:var(--green-bg);border:2px solid var(--green);}
+.flow-box.warning{background:var(--amber-bg);border:2px solid var(--amber);}
+.flow-box.info{background:var(--purple-bg);border:2px solid var(--purple);}
+.flow-box.class-i{border-left:5px solid var(--green);}
+.flow-box.class-iia{border-left:5px solid var(--amber);}
+.flow-box.class-iib{border-left:5px solid #f59e0b;}
+.flow-box.class-iii{border-left:5px solid var(--red);}
+.flow-arrow{width:2px;height:24px;background:var(--gray);margin:0 auto;position:relative;}
+.flow-arrow::after{content:'▼';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);color:var(--gray);font-size:10px;}
+.flow-arrow-h{height:2px;width:40px;background:var(--gray);position:relative;align-self:center;}
+.flow-split{display:flex;gap:24px;justify-content:center;position:relative;padding-top:12px;}
+.flow-split::before{content:'';position:absolute;top:0;left:25%;right:25%;height:2px;background:var(--gray);}
+.flow-branch{display:flex;flex-direction:column;align-items:center;gap:0;}
+.flow-label{font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;margin:4px 0;}
+/* DECISION TREE */
+.dtree{margin:20px 0;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.dtree-title{background:var(--gray-light);padding:12px 16px;font-weight:600;font-size:14px;border-bottom:1px solid var(--border);}
+.dtree-step{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;font-size:13px;}
+.dtree-step:last-child{border-bottom:none;}
+.dtree-step input[type=checkbox]{margin-top:3px;accent-color:var(--green);width:16px;height:16px;cursor:pointer;flex-shrink:0;}
+.dtree-step.indent-1{padding-left:40px;}
+.dtree-step.indent-2{padding-left:64px;}
+.dtree-step .class-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;margin-left:6px;vertical-align:middle;}
+.class-badge.i{background:var(--green);color:#fff;}
+.class-badge.iia{background:var(--amber);color:#fff;}
+.class-badge.iib{background:#f59e0b;color:#fff;}
+.class-badge.iii{background:var(--red);color:#fff;}
+/* ALERT BOXES */
+.alert{padding:14px 18px;border-radius:8px;margin:16px 0;font-size:13px;line-height:1.5;}
+.alert-au{background:#eff6ff;border-left:4px solid #2563eb;}.alert-au::before{content:'🇦🇺 AU PRIORITY: ';font-weight:700;}
+.alert-diff{background:#fef3c7;border-left:4px solid #d97706;}.alert-diff::before{content:'⚠ ESC vs AU DIFFERENCE: ';font-weight:700;}
+.alert-deprecated{background:var(--red-bg);border-left:4px solid var(--red);}.alert-deprecated::before{content:'✖ DEPRECATED: ';font-weight:700;color:var(--red);}
+.alert-safety{background:#fce7f3;border-left:4px solid #db2777;}.alert-safety::before{content:'⚕ SAFETY: ';font-weight:700;color:#db2777;}
+.alert-info{background:var(--purple-bg);border-left:4px solid var(--purple);}
+/* CALCULATOR */
+.calc{background:var(--gray-light);border-radius:12px;padding:24px;margin:20px 0;}
+.calc h4{margin-bottom:16px;font-size:16px;}
+.calc-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.calc-row:last-of-type{border-bottom:none;}
+.calc-row input[type=checkbox]{width:20px;height:20px;accent-color:var(--blue);cursor:pointer;}
+.calc-row .pts{margin-left:auto;font-weight:700;color:var(--blue);min-width:60px;text-align:right;}
+.calc-result{margin-top:16px;padding:16px;border-radius:8px;font-size:16px;font-weight:600;text-align:center;}
+.calc-result.low{background:#dcfce7;color:#166534;border:2px solid #16a34a;}
+.calc-result.moderate{background:#fef9c3;color:#854d0e;border:2px solid #eab308;}
+.calc-result.high{background:#fecaca;color:#991b1b;border:2px solid #dc2626;}
+/* TABLES */
+.med-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;}
+.med-table th{background:var(--navy);color:#fff;padding:10px 12px;text-align:left;font-weight:600;}
+.med-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.med-table tr:hover{background:var(--gray-light);}
+.med-table .drug-name{font-weight:700;color:var(--blue);}
+/* MISC */
+h1{font-size:28px;color:var(--navy);margin-bottom:8px;}
+h2{font-size:20px;color:var(--navy);margin:24px 0 12px;}
+p{margin:8px 0;}
+.subtitle{color:var(--text-light);font-size:14px;margin-bottom:24px;}
+.tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;}
+.tag-c{background:#dbeafe;color:#1e40af;}.tag-a{background:#fecaca;color:#991b1b;}
+.tag-r{background:#d1fae5;color:#065f46;}.tag-e{background:#e9d5ff;color:#6b21a8;}
+.sources{font-size:12px;color:var(--text-light);margin-top:40px;padding-top:20px;border-top:2px solid var(--border);}
+.sources a{color:var(--blue);}
+.print-btn{position:fixed;bottom:20px;right:20px;background:var(--blue);color:#fff;border:none;padding:12px 20px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.15);z-index:999;}
+.print-btn:hover{background:#1d4ed8;}
+@media print{.sidebar,.menu-btn,.print-btn,.review-bar,.fb-btn,.fb-form,.review-panel-toggle,.reset-cb-btn,.review-panel{display:none !important;}.main{margin-left:0 !important;padding:10px !important;}.section{break-inside:avoid;box-shadow:none;border:1px solid #ccc;}.section-body.hidden{display:block !important;}}
+/* ===== REVIEW MODE ===== */
+.review-bar{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;padding:14px 24px;position:fixed;top:0;left:280px;right:0;z-index:1100;display:flex;align-items:center;gap:16px;box-shadow:0 2px 12px rgba(124,58,237,.3);flex-wrap:wrap;}
+.review-bar label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;opacity:.85;}
+.review-bar input[type=text]{padding:6px 10px;border:1px solid rgba(255,255,255,.3);border-radius:6px;background:rgba(255,255,255,.15);color:#fff;font-size:13px;outline:none;width:160px;}
+.review-bar input::placeholder{color:rgba(255,255,255,.5);}
+.review-bar input:focus{border-color:#fff;background:rgba(255,255,255,.25);}
+.review-bar .rv-count{margin-left:auto;background:rgba(255,255,255,.2);padding:4px 12px;border-radius:12px;font-size:12px;font-weight:600;}
+.review-bar .rv-btn{background:#fff;color:#7c3aed;border:none;padding:7px 16px;border-radius:6px;cursor:pointer;font-weight:700;font-size:13px;transition:all .15s;}
+.review-bar .rv-btn:hover{background:#f3e8ff;transform:scale(1.02);}
+.main.review-active{padding-top:80px;}
+@media(max-width:900px){.review-bar{left:0;}}
+/* Feedback button */
+.fb-btn{display:inline-flex;align-items:center;gap:6px;background:#f3e8ff;color:#7c3aed;border:2px solid #c4b5fd;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;margin-top:16px;transition:all .15s;}
+.fb-btn:hover{background:#7c3aed;color:#fff;}
+.fb-btn .fb-count{background:#7c3aed;color:#fff;border-radius:50%;min-width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;}
+/* Feedback form */
+.fb-form{background:#faf5ff;border:2px solid #ddd6fe;border-radius:10px;padding:16px;margin-top:12px;display:none;}
+.fb-form.open{display:block;}
+.fb-form textarea{width:100%;min-height:80px;padding:10px;border:1px solid #ddd6fe;border-radius:6px;font-size:13px;font-family:inherit;resize:vertical;margin:8px 0;}
+.fb-form textarea:focus{outline:none;border-color:#7c3aed;}
+.fb-rating{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap;}
+.fb-rating label{display:flex;align-items:center;gap:4px;padding:5px 12px;border-radius:16px;border:2px solid #e5e7eb;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s;}
+.fb-rating label:hover{border-color:#7c3aed;}
+.fb-rating input[type=radio]{display:none;}
+.fb-rating label.r-agree{color:#16a34a;}.fb-rating label.r-agree.selected{background:#dcfce7;border-color:#16a34a;}
+.fb-rating label.r-change{color:#d97706;}.fb-rating label.r-change.selected{background:#fef3c7;border-color:#d97706;}
+.fb-rating label.r-flag{color:#dc2626;}.fb-rating label.r-flag.selected{background:#fecaca;border-color:#dc2626;}
+.fb-submit{background:#7c3aed;color:#fff;border:none;padding:8px 18px;border-radius:6px;cursor:pointer;font-weight:700;font-size:13px;margin-top:4px;}
+.fb-submit:hover{background:#6d28d9;}
+.fb-cancel{background:transparent;color:var(--gray);border:1px solid var(--border);padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;margin-left:8px;}
+/* Feedback entries */
+.fb-entry{background:#fff;border:1px solid #ddd6fe;border-radius:8px;padding:12px;margin:8px 0;font-size:13px;position:relative;}
+.fb-entry .fb-meta{color:var(--gray);font-size:11px;margin-bottom:4px;}
+.fb-entry .fb-status{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-left:6px;}
+.fb-status.s-agree{background:#dcfce7;color:#16a34a;}
+.fb-status.s-change{background:#fef3c7;color:#d97706;}
+.fb-status.s-flag{background:#fecaca;color:#dc2626;}
+.fb-entry .fb-del{position:absolute;top:8px;right:10px;background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;}.fb-entry .fb-del:hover{color:#dc2626;}
+/* Header badge */
+.section-header .fb-badge{background:#7c3aed;color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:8px;display:none;}
+.section-header .fb-badge.visible{display:inline-block;}
+/* Review summary panel */
+.review-panel-toggle{position:fixed;bottom:70px;right:20px;background:#7c3aed;color:#fff;border:none;padding:12px 20px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;box-shadow:0 2px 8px rgba(124,58,237,.3);z-index:999;}
+.review-panel-toggle:hover{background:#6d28d9;}
+.review-panel{position:fixed;top:56px;right:0;width:400px;height:calc(100vh - 56px);background:#fff;border-left:2px solid #ddd6fe;z-index:1050;overflow-y:auto;padding:20px;transform:translateX(100%);transition:transform .3s;box-shadow:-4px 0 20px rgba(0,0,0,.1);}
+.review-panel.open{transform:translateX(0);}
+.review-panel h3{color:#7c3aed;margin-bottom:16px;font-size:16px;border-bottom:2px solid #ddd6fe;padding-bottom:8px;}
+.review-panel .rp-section{margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:12px;}
+.review-panel .rp-section h4{font-size:13px;color:var(--navy);margin-bottom:6px;}
+.review-panel .rp-empty{color:var(--gray);font-style:italic;font-size:13px;padding:20px 0;}
+</style>
+</head>
+<body>
+<button class="menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+<button class="print-btn" onclick="window.print()">🖨 Print</button>
+
+<!-- REVIEW MODE BAR -->
+<div class="review-bar" id="reviewBar">
+<label>Reviewer</label>
+<input type="text" id="rvName" placeholder="Your name" autocomplete="off">
+<label>Role</label>
+<input type="text" id="rvRole" placeholder="e.g. ED Consultant, Registrar" autocomplete="off">
+<span class="rv-count" id="rvCount">0 comments</span>
+<button class="rv-btn" onclick="exportFeedback()">Export Feedback</button>
+<button class="rv-btn" onclick="downloadFeedback()">Download .txt</button>
+</div>
+
+<!-- REVIEW SUMMARY PANEL -->
+<div class="review-panel" id="reviewPanel">
+<h3>All Feedback Summary</h3>
+<div id="rpContent"><p class="rp-empty">No feedback yet. Use the feedback buttons in each section to add comments.</p></div>
+</div>
+<button class="review-panel-toggle" id="rpToggle" onclick="document.getElementById('reviewPanel').classList.toggle('open')">View All Feedback</button>
+
+<nav class="sidebar">
+<h2>AF Management<span>ESC/EACTS 2024 + AU Guidelines</span></h2>
+<div class="nav-section">
+<div class="nav-group">Framework</div>
+<a href="#care">AF-CARE Framework</a>
+<a href="#calc">CHA₂DS₂-VA Calculator</a>
+<div class="nav-group">Patient Pathways</div>
+<a href="#first">First-Diagnosed AF</a>
+<a href="#paf">Paroxysmal AF</a>
+<a href="#persaf">Persistent AF</a>
+<a href="#permaf">Permanent AF</a>
+<a href="#unstable">Unstable / Haemodynamic Compromise</a>
+<div class="nav-group">Anticoagulation</div>
+<a href="#oac">OAC Decision Pathway</a>
+<a href="#doac">DOAC Dosing (AU Formulary)</a>
+<a href="#bleed">Bleeding Risk Management</a>
+<a href="#activebleed">Active Bleeding Management</a>
+<div class="nav-group">Rate &amp; Rhythm</div>
+<a href="#rate">Rate Control</a>
+<a href="#rhythm">Rhythm Control / Cardioversion</a>
+<a href="#aad">Antiarrhythmic Drug Therapy</a>
+<div class="nav-group">Special Populations</div>
+<a href="#preg">Pregnancy</a>
+<a href="#cancer">Cancer</a>
+<a href="#trigger">Trigger-Induced / Sepsis</a>
+<a href="#postop">Post-Operative AF</a>
+<a href="#acs">ACS + AF</a>
+<a href="#elderly">Elderly / Frail</a>
+<a href="#chd">Congenital Heart Disease</a>
+<a href="#endo">Endocrine Disorders</a>
+<a href="#icm">Inherited Cardiomyopathies</a>
+<div class="nav-group">Comorbidities</div>
+<a href="#comorbid">Comorbidity Targets</a>
+<div class="nav-group">Reference</div>
+<a href="#audiff">AU vs ESC Differences</a>
+<a href="#sources">Sources</a>
+</div>
+</nav>
+
+<div class="main review-active">
+<h1>Atrial Fibrillation Management Algorithm</h1>
+<p class="subtitle">Emergency Medicine Decision Support Tool — Based on 2024 ESC/EACTS Guidelines | Australian Priority<br>
+<strong>Last Updated:</strong> March 2026 | <strong>Guideline Base:</strong> ESC/EACTS 2024, NHF/CSANZ 2018, AMH 2025</p>
+
+<!-- ==================== AF-CARE FRAMEWORK ==================== -->
+<div class="section" id="care">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>1. AF-CARE Framework Overview</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<p>The 2024 ESC/EACTS Guidelines introduce the <strong>AF-CARE</strong> framework — a structured, patient-centred approach organising care into four integrated pillars. All patients with AF should be managed according to ALL four pillars simultaneously.</p>
+
+<div class="flow">
+<div class="flow-row" style="gap:24px;">
+<div class="flow-box info" style="flex:1;"><strong style="font-size:24px;">C</strong><br>Comorbidity &amp; Risk Factor Management<br><span class="tag tag-c">Pillar 1</span></div>
+<div class="flow-box" style="flex:1;background:#fecaca;border:2px solid #dc2626;"><strong style="font-size:24px;">A</strong><br>Avoid Stroke &amp; Thromboembolism<br><span class="tag tag-a">Pillar 2</span></div>
+<div class="flow-box success" style="flex:1;"><strong style="font-size:24px;">R</strong><br>Reduce Symptoms by Rate &amp; Rhythm Control<br><span class="tag tag-r">Pillar 3</span></div>
+<div class="flow-box" style="flex:1;background:#e9d5ff;border:2px solid #7c3aed;"><strong style="font-size:24px;">E</strong><br>Evaluation &amp; Dynamic Reassessment<br><span class="tag tag-e">Pillar 4</span></div>
+</div>
+</div>
+
+<div class="dtree">
+<div class="dtree-title">AF-CARE Stepwise Checklist</div>
+<div class="dtree-step"><input type="checkbox" id="c1"><label for="c1"><strong>[C]</strong> Identify and actively manage ALL risk factors and comorbidities <span class="class-badge i">I</span></label></div>
+<div class="dtree-step indent-1"><input type="checkbox" id="c2"><label for="c2">Hypertension: Target BP 120–129/70–79 mmHg</label></div>
+<div class="dtree-step indent-1"><input type="checkbox" id="c3"><label for="c3">Heart failure: Optimise with diuretics, SGLT2i for all LVEF</label></div>
+<div class="dtree-step indent-1"><input type="checkbox" id="c4"><label for="c4">Diabetes: Effective glycaemic control</label></div>
+<div class="dtree-step indent-1"><input type="checkbox" id="c5"><label for="c5">Obesity: Target ≥10% weight loss if overweight/obese</label></div>
+<div class="dtree-step indent-1"><input type="checkbox" id="c6"><label for="c6">Sleep apnoea: Screen and manage OSA</label></div>
+<div class="dtree-step indent-1"><input type="checkbox" id="c7"><label for="c7">Physical activity: 150–300 min/week moderate intensity</label></div>
+<div class="dtree-step indent-1"><input type="checkbox" id="c8"><label for="c8">Alcohol: ≤3 standard drinks/week (≤30g/week)</label></div>
+<div class="dtree-step"><input type="checkbox" id="a1"><label for="a1"><strong>[A]</strong> Assess stroke risk with CHA₂DS₂-VA score <span class="class-badge i">I</span></label></div>
+<div class="dtree-step indent-1"><input type="checkbox" id="a2"><label for="a2">Score ≥2 → Initiate OAC (preferably DOAC)</label></div>
+<div class="dtree-step indent-1"><input type="checkbox" id="a3"><label for="a3">Score = 1 → Consider OAC (shared decision)</label></div>
+<div class="dtree-step indent-1"><input type="checkbox" id="a4"><label for="a4">Manage modifiable bleeding risk factors (NOT HAS-BLED)</label></div>
+<div class="dtree-step"><input type="checkbox" id="r1"><label for="r1"><strong>[R]</strong> Rate control as initial therapy in the acute setting <span class="class-badge i">I</span></label></div>
+<div class="dtree-step indent-1"><input type="checkbox" id="r2"><label for="r2">Target resting HR &lt;110 bpm (lenient) initially</label></div>
+<div class="dtree-step indent-1"><input type="checkbox" id="r3"><label for="r3">Consider rhythm control in all suitable patients (shared decision)</label></div>
+<div class="dtree-step"><input type="checkbox" id="e1"><label for="e1"><strong>[E]</strong> Baseline TTE in all new AF diagnoses <span class="class-badge i">I</span></label></div>
+<div class="dtree-step indent-1"><input type="checkbox" id="e2"><label for="e2">Re-evaluate at 6 months, then at least annually</label></div>
+<div class="dtree-step indent-1"><input type="checkbox" id="e3"><label for="e3">Reassess comorbidities, OAC adherence, risk factors at every contact</label></div>
+</div>
+</div>
+</div>
+
+<!-- ==================== CHA2DS2-VA CALCULATOR ==================== -->
+<div class="section" id="calc">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>2. CHA₂DS₂-VA Score Calculator</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="alert alert-info"><strong>2024 UPDATE:</strong> CHA₂DS₂-VA replaces CHA₂DS₂-VASc. Female sex is NO LONGER a risk modifier — the same thresholds apply regardless of gender. Maximum score is now 9.</div>
+
+<div class="calc">
+<h4>Calculate CHA₂DS₂-VA Score</h4>
+<div class="calc-row"><input type="checkbox" onchange="calcCHA()" id="cha_c"><label for="cha_c"><strong>C</strong> — Congestive Heart Failure<br><small>Symptoms/signs of HF (any LVEF) or asymptomatic LVEF ≤40%</small></label><span class="pts" data-pts="1">+1</span></div>
+<div class="calc-row"><input type="checkbox" onchange="calcCHA()" id="cha_h"><label for="cha_h"><strong>H</strong> — Hypertension<br><small>BP &gt;140/90 on ≥2 occasions or current antihypertensive Rx</small></label><span class="pts" data-pts="1">+1</span></div>
+<div class="calc-row"><input type="checkbox" onchange="calcCHA()" id="cha_a2"><label for="cha_a2"><strong>A</strong> — Age ≥75 years</label><span class="pts" data-pts="2">+2</span></div>
+<div class="calc-row"><input type="checkbox" onchange="calcCHA()" id="cha_d"><label for="cha_d"><strong>D</strong> — Diabetes Mellitus<br><small>Type 1 or 2, or treatment with glucose-lowering therapy</small></label><span class="pts" data-pts="1">+1</span></div>
+<div class="calc-row"><input type="checkbox" onchange="calcCHA()" id="cha_s"><label for="cha_s"><strong>S</strong> — Prior Stroke / TIA / Arterial Thromboembolism</label><span class="pts" data-pts="2">+2</span></div>
+<div class="calc-row"><input type="checkbox" onchange="calcCHA()" id="cha_v"><label for="cha_v"><strong>V</strong> — Vascular Disease<br><small>CAD (prior MI, revascularisation, significant CAD on imaging), PAD, aortic plaque ≥4mm</small></label><span class="pts" data-pts="1">+1</span></div>
+<div class="calc-row"><input type="checkbox" onchange="calcCHA()" id="cha_a1"><label for="cha_a1"><strong>A</strong> — Age 65–74 years</label><span class="pts" data-pts="1">+1</span></div>
+<div id="chaResult" class="calc-result low">Score: 0 — No OAC recommended</div>
+</div>
+
+<div class="alert alert-deprecated">HAS-BLED score is <strong>no longer recommended</strong> to decide on starting or withdrawing OAC (Class III, Level B). Instead, identify and manage modifiable bleeding risk factors at every patient contact.</div>
+</div>
+</div>
+
+<!-- ==================== FIRST-DIAGNOSED AF ==================== -->
+<div class="section" id="first">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>3. First-Diagnosed AF Pathway</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<h2>Visual Algorithm</h2>
+<div class="flow">
+<div class="flow-box action" style="min-width:300px;"><strong>Patient with First-Diagnosed AF</strong></div>
+<div class="flow-arrow"></div>
+<div class="flow-box decision"><strong>Haemo-dynamically Stable?</strong></div>
+<div class="flow-split">
+<div class="flow-branch">
+<div class="flow-label">YES</div>
+<div class="flow-arrow"></div>
+<div class="flow-box info" style="min-width:320px;">Follow AF-CARE: <strong>[C]</strong> Comorbidity management + <strong>[A]</strong> Anticoagulation assessment</div>
+<div class="flow-arrow"></div>
+<div class="flow-box action"><strong>Initial Rate Control</strong> <span class="class-badge i">I</span></div>
+<div class="flow-arrow"></div>
+<div class="flow-box decision"><strong>LVEF ≤40%?</strong></div>
+<div class="flow-split">
+<div class="flow-branch">
+<div class="flow-label">YES</div>
+<div class="flow-arrow"></div>
+<div class="flow-box success">Beta-blocker or Digoxin <span class="class-badge i">I</span><br><small>NO verapamil/diltiazem</small></div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">NO</div>
+<div class="flow-arrow"></div>
+<div class="flow-box success">Beta-blocker, Digoxin, Diltiazem, or Verapamil <span class="class-badge i">I</span></div>
+</div>
+</div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning">If single drug fails → Combination rate control <span class="class-badge iia">IIa</span></div>
+<div class="flow-arrow"></div>
+<div class="flow-box info">Consider cardioversion of symptomatic persistent AF <span class="class-badge i">I</span></div>
+<div class="flow-arrow"></div>
+<div class="flow-box" style="background:#e0e7ff;border:2px solid #4f46e5;">Wait-and-see if sinus rhythm restores spontaneously &lt;48h <span class="class-badge iia">IIa</span></div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">NO — UNSTABLE</div>
+<div class="flow-arrow"></div>
+<div class="flow-box urgent"><strong>Electrical Cardioversion</strong> <span class="class-badge i">I</span><br>Immediate DC cardioversion</div>
+</div>
+</div>
+</div>
+
+<div class="dtree">
+<div class="dtree-title">First-Diagnosed AF — Stepwise Decision Tree</div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 1:</strong> Confirm AF diagnosis on ECG (12-lead, single or multiple leads) — physician confirmation required <span class="class-badge i">I-A</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 2:</strong> Assess haemodynamic stability (BP, mental status, signs of shock, chest pain, acute pulmonary oedema)</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 3a:</strong> If <strong>UNSTABLE</strong> → Immediate synchronised DC cardioversion <span class="class-badge i">I-C</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 3b:</strong> If <strong>STABLE</strong> → Proceed to AF-CARE assessment</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 4 [C]:</strong> Identify comorbidities — hypertension, HF, diabetes, obesity, sleep apnoea, thyroid disease. Order baseline bloods (FBC, UEC, TFTs, LFTs, coag)</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 5 [A]:</strong> Calculate CHA₂DS₂-VA score. If ≥2 → initiate OAC. If = 1 → consider OAC. Assess modifiable bleeding risk factors.</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 6 [R]:</strong> Initiate rate control — check LVEF (bedside echo or known):</label></div>
+<div class="dtree-step indent-1"><input type="checkbox"><label>LVEF ≤40% → Beta-blocker (metoprolol) OR digoxin. <strong>AVOID verapamil/diltiazem.</strong></label></div>
+<div class="dtree-step indent-1"><input type="checkbox"><label>LVEF &gt;40% → Beta-blocker, diltiazem, verapamil, OR digoxin</label></div>
+<div class="dtree-step indent-1"><input type="checkbox"><label>Target: Resting HR &lt;110 bpm (lenient). Stricter if ongoing symptoms.</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 7:</strong> If AF duration &lt;48h and symptoms persist → consider wait-and-see approach (69% spontaneously convert — RACE 7 ACWAS) <span class="class-badge iia">IIa</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 8:</strong> If cardioversion planned and AF &gt;24h known duration → ensure ≥3 weeks therapeutic OAC OR TOE to exclude thrombus</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 9 [E]:</strong> Arrange TTE, outpatient follow-up. Continue OAC ≥4 weeks post-cardioversion regardless of rhythm outcome. <span class="class-badge i">I-B</span></label></div>
+</div>
+
+<div class="alert alert-au">In Australia, the 2018 NHF/CSANZ guidelines used a 48h threshold for cardioversion safety. The 2024 ESC guidelines have reduced this to <strong>24 hours</strong>. Follow the updated 24h threshold as per 2024 evidence, but note this represents a change from prior Australian practice.</div>
+</div>
+</div>
+
+<!-- ==================== PAROXYSMAL AF ==================== -->
+<div class="section" id="paf">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>4. Paroxysmal AF Pathway</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<h2>Visual Algorithm</h2>
+<div class="flow">
+<div class="flow-box action" style="min-width:300px;"><strong>Patient with Paroxysmal AF</strong></div>
+<div class="flow-arrow"></div>
+<div class="flow-box info" style="min-width:380px;">Follow AF-CARE: [C] Comorbidity + [A] Anticoagulation (CHA₂DS₂-VA assessment)</div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning">Rate control target: Resting HR &lt;110 bpm (lenient) <span class="class-badge iia">IIa</span><br><small>Stricter control if continuing symptoms</small></div>
+<div class="flow-arrow"></div>
+<div class="flow-box decision"><strong>LVEF ≤40%?</strong></div>
+<div class="flow-split">
+<div class="flow-branch">
+<div class="flow-label">YES</div>
+<div class="flow-arrow"></div>
+<div class="flow-box success">Beta-blocker or Digoxin <span class="class-badge i">I</span></div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning">→ Combination rate control <span class="class-badge iia">IIa</span></div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">NO (LVEF &gt;40%)</div>
+<div class="flow-arrow"></div>
+<div class="flow-box success">Beta-blocker, Digoxin, Diltiazem, or Verapamil <span class="class-badge i">I</span></div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning">→ Combination rate control <span class="class-badge iia">IIa</span></div>
+</div>
+</div>
+<div class="flow-arrow"></div>
+<div class="flow-box action"><strong>Shared Decision on Rhythm Control</strong> <span class="class-badge i">I</span></div>
+<div class="flow-arrow"></div>
+<div class="flow-row" style="gap:12px;">
+<div class="flow-box success" style="flex:1;"><strong>Catheter Ablation</strong><br>First-line option for pAF <span class="class-badge i">I-A</span></div>
+<div style="align-self:center;font-weight:700;color:var(--gray);">OR</div>
+<div class="flow-box action" style="flex:1;"><strong>Antiarrhythmic Drug Therapy</strong><br>(see AAD selection by cardiac condition)</div>
+</div>
+</div>
+
+<div class="dtree">
+<div class="dtree-title">Paroxysmal AF — AAD Selection by Cardiac Condition</div>
+<div class="dtree-step"><input type="checkbox"><label><strong>HFrEF (LVEF ≤40%):</strong> Amiodarone <span class="class-badge i">I-A</span> | Sotalol <span class="class-badge iib">IIb</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Stable HFmrEF (LVEF 41–49%), Coronary Artery Disease, Valvular Heart Disease:</strong> Amiodarone or Dronedarone <span class="class-badge i">I-A</span> | Sotalol <span class="class-badge iib">IIb</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Absence or Minimal Heart Disease:</strong> Dronedarone, Flecainide, or Propafenone <span class="class-badge i">I-A</span> | Sotalol <span class="class-badge iib">IIb</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Key 2024 change:</strong> Catheter ablation is now a <strong>FIRST-LINE</strong> rhythm control option for paroxysmal AF (Class I, Level A) — not just after AAD failure</label></div>
+<div class="dtree-step"><input type="checkbox"><label>If AAD fails → Catheter ablation <span class="class-badge i">I-A</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>If catheter ablation fails → Re-do ablation <span class="class-badge iia">IIa</span> | Surgical/hybrid ablation <span class="class-badge iib">IIb</span> | Return to AAD</label></div>
+</div>
+</div>
+</div>
+
+<!-- ==================== PERSISTENT AF ==================== -->
+<div class="section" id="persaf">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>5. Persistent AF Pathway</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="flow">
+<div class="flow-box action" style="min-width:300px;"><strong>Patient with Persistent AF</strong></div>
+<div class="flow-arrow"></div>
+<div class="flow-box info">Follow AF-CARE [C] + [A]</div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning">Rate control: HR &lt;110 bpm target <span class="class-badge iia">IIa</span></div>
+<div class="flow-arrow"></div>
+<div class="flow-box action"><strong>Shared Decision on Rhythm Control</strong> <span class="class-badge i">I</span></div>
+<div class="flow-arrow"></div>
+<div class="flow-row" style="gap:12px;">
+<div class="flow-box urgent" style="flex:1;"><strong>Electrical Cardioversion</strong><br>• Haemodynamic instability <span class="class-badge i">I-C</span><br>• Part of rhythm strategy <span class="class-badge iia">IIa</span><br>• Diagnostic utility <span class="class-badge iia">IIa</span></div>
+<div style="align-self:center;font-weight:700;">AND/OR</div>
+<div class="flow-box action" style="flex:1;"><strong>AAD Therapy</strong><br>(same AAD selection as pAF by cardiac condition)</div>
+</div>
+<div class="flow-arrow"></div>
+<div class="flow-box success">Catheter ablation (Class IIb for persistent AF as first-line)<br><small>Class I if resistant/intolerant to AADs</small></div>
+</div>
+
+<div class="dtree">
+<div class="dtree-title">Persistent AF — Key Decision Points</div>
+<div class="dtree-step"><input type="checkbox"><label>Rate control as initial therapy with same drug algorithm as pAF (by LVEF)</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Cardioversion safety: If AF &gt;24h known duration → ≥3 weeks therapeutic OAC or TOE first <span class="class-badge i">I-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>If AF ≤24h → may cardiovert without TOE (ensure anticoagulation status assessed)</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Post-cardioversion: OAC for ≥4 weeks regardless of rhythm outcome <span class="class-badge i">I-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>If haemodynamic instability → electrical cardioversion immediately <span class="class-badge i">I-C</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>AAD selection identical to paroxysmal AF pathway (by LVEF/cardiac condition)</label></div>
+<div class="dtree-step"><input type="checkbox"><label>For failed AADs → Catheter ablation <span class="class-badge i">I-A</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>For failed catheter ablation → Endoscopic/hybrid ablation <span class="class-badge iia">IIa-A</span>, re-do catheter <span class="class-badge iia">IIa</span>, or return to AADs</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Consider rhythm control within 12 months of diagnosis in patients with high risk of stroke/thromboembolism to reduce cardiovascular death or hospitalisation (EAST-AFNET 4 evidence)</label></div>
+</div>
+</div>
+</div>
+
+<!-- ==================== PERMANENT AF ==================== -->
+<div class="section" id="permaf">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>6. Permanent AF Pathway</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<p><strong>Definition:</strong> Permanent AF = shared decision between patient and clinician that no further attempts at restoring sinus rhythm will be made. Rate control is the sole treatment strategy.</p>
+
+<div class="flow">
+<div class="flow-box action"><strong>Patient with Permanent AF</strong></div>
+<div class="flow-arrow"></div>
+<div class="flow-box info">Follow AF-CARE [C] + [A]</div>
+<div class="flow-arrow"></div>
+<div class="flow-box decision"><strong>LVEF?</strong></div>
+<div class="flow-split">
+<div class="flow-branch">
+<div class="flow-label">LVEF ≤40%</div>
+<div class="flow-arrow"></div>
+<div class="flow-box success">Beta-blocker OR Digoxin <span class="class-badge i">I</span></div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning">Combination: BB + digoxin (avoid bradycardia) <span class="class-badge iia">IIa</span></div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">LVEF &gt;40%</div>
+<div class="flow-arrow"></div>
+<div class="flow-box success">BB, Digoxin, Diltiazem, or Verapamil <span class="class-badge i">I</span></div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning">Combination therapy <span class="class-badge iia">IIa</span><br><small>BB + diltiazem/verapamil only in secondary care with ECG monitoring</small></div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">SEVERE SYMPTOMS + HF HOSPITALISATION</div>
+<div class="flow-arrow"></div>
+<div class="flow-box urgent">AV node ablation + Pacemaker (CRT if indicated) <span class="class-badge iia">IIa</span></div>
+</div>
+</div>
+<div class="flow-arrow"></div>
+<div class="flow-box action">Re-evaluate: HR &lt;110 bpm target. If symptomatic → intensify rate control → consider AV node ablation + pacing <span class="class-badge iia">IIa</span></div>
+</div>
+
+<div class="dtree">
+<div class="dtree-title">Permanent AF — Stepwise Decision Tree</div>
+<div class="dtree-step"><input type="checkbox"><label>Confirm shared decision with patient: no further rhythm control attempts</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Continue OAC based on CHA₂DS₂-VA score — permanent AF does NOT change anticoagulation need</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Initiate rate control by LVEF (as above)</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Lenient target: HR &lt;110 bpm at rest <span class="class-badge iia">IIa</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>If ongoing symptoms despite combination therapy → consider AV node ablation + pacemaker <span class="class-badge iia">IIa</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>For severely symptomatic with HF hospitalisation → AV node ablation + CRT <span class="class-badge iia">IIa</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>Dynamic reassessment: Re-evaluate rate control at each visit. Adjust medications as comorbidities evolve.</label></div>
+</div>
+</div>
+</div>
+
+<!-- ==================== UNSTABLE AF ==================== -->
+<div class="section" id="unstable">
+<div class="section-header" onclick="toggleSection(this)" style="background:#991b1b;">
+<h3>7. Haemodynamically Unstable AF ⚡</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="alert alert-safety">This section covers AF with haemodynamic instability caused by the arrhythmia itself, acute cardiac conditions, sepsis, trauma, surgery, or cancer-related illness. Identify and treat the UNDERLYING CAUSE in parallel.</div>
+
+<div class="flow">
+<div class="flow-box urgent" style="min-width:350px;"><strong>UNSTABLE PATIENT WITH AF</strong><br>Hypotension, shock, acute pulmonary oedema, ongoing ischaemia, reduced consciousness</div>
+<div class="flow-arrow"></div>
+<div class="flow-box urgent" style="font-size:15px;"><strong>⚡ EMERGENCY ELECTRICAL CARDIOVERSION</strong> <span class="class-badge i">I-C</span><br>Synchronised DC shock — First-line treatment</div>
+<div class="flow-arrow"></div>
+<div class="flow-box action"><strong>Simultaneously address underlying cause:</strong><br>• Sepsis → Fluid resuscitation, antibiotics<br>• Electrolyte correction (K⁺, Mg²⁺)<br>• Treat fluid overload / cardiogenic shock<br>• Assess for ACS, PE, tamponade</div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning"><strong>If cardioversion unsuccessful or AF recurs:</strong><br>Amiodarone IV (second-line — accepts delayed onset) <span class="class-badge iib">IIb</span><br><small>300mg IV in 250mL D5W over 30–60 min, then 900–1200mg over 24h</small></div>
+<div class="flow-arrow"></div>
+<div class="flow-box success"><strong>Acute Rate Control (if sinus rhythm not restored):</strong></div>
+<div class="flow-split">
+<div class="flow-branch">
+<div class="flow-label">LVEF &gt;40%</div>
+<div class="flow-arrow"></div>
+<div class="flow-box success">Beta-blockers preferred<br>Digoxin, diltiazem, verapamil also options</div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">LVEF ≤40% / Severely depressed</div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning">IV amiodarone, digoxin, or landiolol <span class="class-badge iib">IIb</span><br><small>NO verapamil/diltiazem</small></div>
+</div>
+</div>
+</div>
+
+<div class="alert alert-diff">Landiolol (ultra-short acting beta-blocker) is referenced in ESC guidelines for acute rate control in critically ill patients with low ejection fraction. Landiolol is <strong>NOT widely available in Australian hospitals</strong>. Use esmolol as the Australian equivalent short-acting beta-blocker where available, or IV metoprolol/amiodarone.</div>
+
+<div class="dtree">
+<div class="dtree-title">Unstable AF — Stepwise Decision Tree</div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 1:</strong> Identify haemodynamic instability: SBP &lt;90, signs of shock, acute pulmonary oedema, ongoing chest pain, altered consciousness</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 2:</strong> Call for help. Prepare for synchronised DC cardioversion. Procedural sedation (ketamine/propofol/midazolam per local protocol)</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 3:</strong> Synchronised DC cardioversion: Start 120–200J biphasic (anterior-posterior pads preferred)</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 4:</strong> Simultaneously: IV access ×2, fluid resuscitation if septic, correct electrolytes (K⁺ &gt;4.0, Mg²⁺ &gt;1.0)</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 5:</strong> If cardioversion fails or AF recurs → Amiodarone IV loading</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 6:</strong> Treat underlying cause — spontaneous reversion in up to 83% within 48h when underlying cause addressed</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 7:</strong> If rate control needed (sinus rhythm not achieved) → drug by LVEF as above. Avoid verapamil/diltiazem if LVEF ≤40%</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 8:</strong> Assess anticoagulation need (CHA₂DS₂-VA) when patient stabilised. Do NOT delay cardioversion for anticoagulation in unstable patients.</label></div>
+</div>
+</div>
+</div>
+
+
+
+<!-- SECTION 8: OAC DECISION PATHWAY -->
+<div class="section" id="oac">
+<div class="section-header" onclick="toggleSection(this)" style="background:#991b1b;">
+<h3>8. Anticoagulation — OAC Decision Pathway</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="flow">
+<div class="flow-box action"><strong>Patient with Clinical AF (any temporal pattern)</strong></div>
+<div class="flow-arrow"></div>
+<div class="flow-box decision"><strong>Mechanical valve or moderate-to-severe mitral stenosis?</strong></div>
+<div class="flow-split">
+<div class="flow-branch">
+<div class="flow-label">YES</div>
+<div class="flow-arrow"></div>
+<div class="flow-box urgent">VKA (Warfarin) ONLY <span class="class-badge i">I-A</span><br>Target INR 2.0–3.0<br><small>DOACs CONTRAINDICATED</small></div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">NO</div>
+<div class="flow-arrow"></div>
+<div class="flow-box action">Calculate CHA₂DS₂-VA Score</div>
+<div class="flow-arrow"></div>
+<div class="flow-box decision"><strong>Score?</strong></div>
+<div class="flow-split">
+<div class="flow-branch">
+<div class="flow-label">0</div>
+<div class="flow-arrow"></div>
+<div class="flow-box success">No OAC<br><small>Reassess at each visit</small></div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">1</div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning">Consider OAC <span class="class-badge iia">IIa-C</span><br><small>Shared decision. Assess other risk factors.</small></div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">≥2</div>
+<div class="flow-arrow"></div>
+<div class="flow-box urgent">OAC Recommended <span class="class-badge i">I-A</span><br>DOAC preferred over VKA</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dtree">
+<div class="dtree-title">OAC Decision — Key Rules</div>
+<div class="dtree-step"><input type="checkbox"><label>DOAC preferred over VKA in ALL eligible patients (except mechanical valves / moderate-to-severe MS) <span class="class-badge i">I-A</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>Hypertrophic cardiomyopathy or cardiac amyloidosis → OAC regardless of CHA₂DS₂-VA score <span class="class-badge i">I-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>Antiplatelet therapy is NOT an alternative to OAC <span class="class-badge iii">III-A</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>AF temporal pattern (paroxysmal/persistent/permanent) does NOT determine OAC need <span class="class-badge iii">III-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>Reduced DOAC dose NOT recommended unless patient meets DOAC-specific dose-reduction criteria <span class="class-badge iii">III-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>Reassess thromboembolic risk periodically — risk factors are dynamic <span class="class-badge i">I-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>If on VKA with TTR &lt;70% → Switch to DOAC <span class="class-badge i">I-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>Do NOT routinely switch from one DOAC to another, or from DOAC to VKA, without clear indication <span class="class-badge iii">III-B</span></label></div>
+</div>
+</div>
+</div>
+
+<!-- SECTION: DOAC DOSING -->
+<div class="section" id="doac">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>9. DOAC Dosing — Australian Formulary (PBS)</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="alert alert-au">All dosing below reflects Australian PBS listings and AMH 2025 recommendations. All three DOACs are PBS Authority Required (Streamlined) for stroke prevention in non-valvular AF with ≥1 additional risk factor.</div>
+
+<table class="med-table">
+<thead><tr><th>DOAC</th><th>Standard Full Dose</th><th>Dose Reduction Criteria</th><th>Reduced Dose</th><th>Renal Contraindication (AU)</th></tr></thead>
+<tbody>
+<tr><td class="drug-name">Apixaban (Eliquis)</td><td>5 mg twice daily</td><td>TWO of THREE:<br>• Age ≥80 years<br>• Body weight ≤60 kg<br>• Serum creatinine ≥133 μmol/L</td><td>2.5 mg twice daily</td><td>CrCl &lt;25 mL/min</td></tr>
+<tr><td class="drug-name">Dabigatran (Pradaxa)</td><td>150 mg twice daily</td><td>Recommended if any:<br>• Age ≥80 years<br>• Concomitant verapamil<br>Consider if any:<br>• Age 75–80<br>• CrCl 30–50 mL/min<br>• Gastritis/oesophagitis/GORD<br>• Increased bleeding risk</td><td>110 mg twice daily</td><td>CrCl &lt;30 mL/min</td></tr>
+<tr><td class="drug-name">Rivaroxaban (Xarelto)</td><td>20 mg once daily</td><td>CrCl 15–49 mL/min</td><td>15 mg once daily</td><td>CrCl &lt;15 mL/min</td></tr>
+</tbody>
+</table>
+
+<div class="alert alert-diff">Edoxaban (Lixiana) is listed in ESC guidelines. Edoxaban IS PBS-listed in Australia (60mg/30mg once daily) for AF but is less commonly prescribed. Standard dose 60mg daily; reduced dose 30mg if: CrCl 15–50 mL/min, body weight ≤60 kg, or concomitant ciclosporin/dronedarone/erythromycin/ketoconazole.</div>
+
+<h2>Specific Antidotes</h2>
+<table class="med-table">
+<thead><tr><th>DOAC</th><th>Specific Antidote</th><th>Availability (AU)</th></tr></thead>
+<tbody>
+<tr><td class="drug-name">Dabigatran</td><td><strong>Idarucizumab (Praxbind)</strong> 5g IV — fully reverses within 2–4 hours</td><td>Available in most Australian EDs</td></tr>
+<tr><td class="drug-name">Apixaban / Rivaroxaban / Edoxaban (Factor Xa inhibitors)</td><td><strong>Andexanet alfa</strong> (if available) — or <strong>Prothrombinex (PCC)</strong> 25–50 IU/kg as alternative</td><td>Andexanet alfa: limited availability in AU. PCC (Prothrombinex-VF) widely available.</td></tr>
+</tbody>
+</table>
+
+<div class="alert alert-au">In Australia, <strong>Prothrombinex-VF</strong> (3-factor PCC) is the standard reversal agent for life-threatening DOAC-related bleeding when specific antidotes are unavailable. Dose: 25–50 IU/kg IV. Activated charcoal may help if DOAC ingested within 2–4 hours.</div>
+
+<h2>Warfarin — When Still Indicated</h2>
+<div class="dtree">
+<div class="dtree-title">Warfarin Indications and Targets</div>
+<div class="dtree-step"><input type="checkbox"><label>Mechanical heart valves — Warfarin ONLY. INR target depends on valve type/position.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Moderate-to-severe mitral stenosis (rheumatic) — Warfarin. INR 2.0–3.0 <span class="class-badge i">I-A</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>Target INR 2.0–3.0. Aim TTR &gt;70% <span class="class-badge iia">IIa-A</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>If TTR &lt;70% and eligible → Switch to DOAC <span class="class-badge i">I-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>Patients ≥75 on stable VKA with good TTR → may continue rather than switch to DOAC (shared decision) <span class="class-badge iib">IIb-B</span></label></div>
+</div>
+</div>
+</div>
+
+<!-- SECTION: BLEEDING RISK -->
+<div class="section" id="bleed">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>10. Bleeding Risk Management (HAS-BLED Deprecated)</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="alert alert-deprecated"><strong>HAS-BLED and all bleeding risk scores</strong> should NOT be used to decide on starting or withdrawing OAC in patients with AF <span class="class-badge iii">III-B</span>. Bleeding risk factors are rarely a reason to withdraw or withhold OAC, as the risk of stroke without anticoagulation often outweighs the risk of major bleeding.</div>
+
+<h2>Modifiable Bleeding Risk Factors — Manage at EVERY Contact</h2>
+<div class="dtree">
+<div class="dtree-title">Modifiable Risk Factors (Class I, Level B)</div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Hypertension:</strong> Optimise BP control (target 120–129/70–79 mmHg) <span class="class-badge i">I</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Antiplatelet drugs:</strong> Do NOT use beyond 12 months in stable coronary disease with OAC <span class="class-badge iii">III</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>NSAIDs:</strong> Offer alternative analgesia or disease-modifying therapy</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Alcohol:</strong> Reduce to &lt;3 standard drinks/week <span class="class-badge i">I</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Unstable/variable INR:</strong> Switch to DOAC if eligible and TTR &lt;70% <span class="class-badge i">I</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Drug interactions:</strong> Review all concomitant medications (see DOAC interaction chart)</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Corticosteroids:</strong> Reduce if possible</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>PPI consideration:</strong> If high GI bleeding risk, individualise gastroprotection</label></div>
+</div>
+
+<h2>Non-Modifiable Risk Factors — Monitor More Closely</h2>
+<div class="dtree">
+<div class="dtree-title">Non-Modifiable Factors (review regularly, multidisciplinary team)</div>
+<div class="dtree-step"><input type="checkbox"><label>Age (risk increases continuously)</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Previous major bleeding</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Severe renal impairment, dialysis, or renal transplant</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Severe hepatic dysfunction or cirrhosis</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Malignancy (active cancer)</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Genetic factors (e.g., CYP2C9 polymorphisms)</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Previous stroke (both increases bleeding and stroke risk)</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Cognitive impairment or dementia (adherence concerns)</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Intracerebral pathology (primary brain tumours, cerebral amyloid angiopathy)</label></div>
+</div>
+<p><strong>If clear contraindications for OAC exist → Consider percutaneous or endoscopic left atrial appendage occlusion (LAAO)</strong> <span class="class-badge iib">IIb-C</span></p>
+</div>
+</div>
+
+<!-- SECTION: ACTIVE BLEEDING -->
+<div class="section" id="activebleed">
+<div class="section-header" onclick="toggleSection(this)" style="background:#991b1b;">
+<h3>11. Active Bleeding Management on OAC</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="flow">
+<div class="flow-box urgent"><strong>Patient with Active Bleeding on OAC</strong></div>
+<div class="flow-arrow"></div>
+<div class="flow-box action">1. Compress bleeding sites mechanically<br>2. Assess haemodynamic status, FBC, coag, renal function<br>3. Determine dose/time of last OAC and co-medications</div>
+<div class="flow-arrow"></div>
+<div class="flow-box decision"><strong>Which OAC?</strong></div>
+<div class="flow-split">
+<div class="flow-branch" style="flex:1;">
+<div class="flow-label">VKA (Warfarin)</div>
+<div class="flow-arrow"></div>
+<div class="flow-split">
+<div class="flow-branch">
+<div class="flow-label">Minor</div>
+<div class="flow-arrow"></div>
+<div class="flow-box success" style="font-size:12px;">Delay VKA until INR &lt;2</div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">Major Non-Life-Threatening</div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning" style="font-size:12px;">Interrupt VKA<br>Fluids, blood products<br>Consider Vitamin K, PCC <span class="class-badge iia">IIa</span></div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">Life-Threatening</div>
+<div class="flow-arrow"></div>
+<div class="flow-box urgent" style="font-size:12px;">Interrupt VKA<br>Prothrombinex (PCC)<br>FFP if PCC unavailable<br>IV Vitamin K 5–10mg<br>Platelets if needed</div>
+</div>
+</div>
+</div>
+<div class="flow-branch" style="flex:1;">
+<div class="flow-label">DOAC</div>
+<div class="flow-arrow"></div>
+<div class="flow-split">
+<div class="flow-branch">
+<div class="flow-label">Minor</div>
+<div class="flow-arrow"></div>
+<div class="flow-box success" style="font-size:12px;">Delay DOAC 1–2 doses<br>(or more if recovery needed)</div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">Major Non-Life-Threatening</div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning" style="font-size:12px;">Interrupt DOAC<br>Fluids, blood products<br>Charcoal if &lt;2–4h since dose<br>Consider PCC</div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">Life-Threatening</div>
+<div class="flow-arrow"></div>
+<div class="flow-box urgent" style="font-size:12px;"><strong>Specific antidotes:</strong><br>Dabigatran → Idarucizumab 5g IV <span class="class-badge iia">IIa</span><br>FXa inhibitors → Andexanet or PCC <span class="class-badge iia">IIa</span><br>Charcoal if recent dose<br>Platelets if needed</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flow-arrow"></div>
+<div class="flow-box action"><strong>After Bleeding Episode:</strong><br>• Discuss benefits/risks of restarting OAC (shared decision)<br>• Aim to re-initiate OAC once source addressed/resolved<br>• Assess and intensify modifiable bleeding risk factor management<br>• Review OAC choice and dose<br>• Institute close monitoring</div>
+</div>
+
+<div class="alert alert-au">In Australian EDs, <strong>Prothrombinex-VF</strong> (25–50 IU/kg) is the standard PCC available. For dabigatran reversal, <strong>idarucizumab</strong> is stocked in most major EDs. Andexanet alfa availability varies — check local formulary.</div>
+</div>
+</div>
+
+<!-- SECTION: RATE CONTROL -->
+<div class="section" id="rate">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>12. Rate Control Algorithm</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<h2>Rate Control Drug Dosing (Australian AMH Dosing)</h2>
+<table class="med-table">
+<thead><tr><th>Drug</th><th>IV Dosing (Acute)</th><th>Oral Maintenance</th><th>Contraindications / Cautions</th></tr></thead>
+<tbody>
+<tr><td colspan="4" style="background:var(--light-blue);font-weight:700;">Beta-Blockers (First-line for LVEF &gt;40% and ≤40%)</td></tr>
+<tr><td class="drug-name">Metoprolol tartrate</td><td>2.5–5 mg IV bolus over 2 min; max cumulative 15 mg</td><td>25–100 mg twice daily</td><td>Asthma (avoid non-selective); acute HF with congestion; severe bradycardia</td></tr>
+<tr><td class="drug-name">Metoprolol XL (succinate)</td><td>N/A</td><td>23.75–190 mg once daily</td><td>Contraindicated in acute HF; history of severe bronchospasm</td></tr>
+<tr><td class="drug-name">Bisoprolol</td><td>N/A</td><td>1.25–10 mg once daily</td><td>As above</td></tr>
+<tr><td class="drug-name">Esmolol</td><td>500 μg/kg IV over 1 min, then 50–300 μg/kg/min infusion</td><td>N/A</td><td>Ultra-short acting. Use in critically ill where effect needs rapid titration.</td></tr>
+<tr><td colspan="4" style="background:#fef3c7;font-weight:700;">Non-Dihydropyridine Calcium Channel Blockers (LVEF &gt;40% ONLY)</td></tr>
+<tr><td class="drug-name">Verapamil</td><td>2.5–10 mg IV over 5 min</td><td>40–480 mg daily (SR formulation preferred)</td><td><strong>CONTRAINDICATED if LVEF ≤40%</strong>. Reduce dose in hepatic/renal impairment.</td></tr>
+<tr><td class="drug-name">Diltiazem</td><td>0.25 mg/kg IV over 5 min (may repeat 0.35 mg/kg)</td><td>60–360 mg daily (CD formulation preferred)</td><td><strong>CONTRAINDICATED if LVEF ≤40%</strong>.</td></tr>
+<tr><td colspan="4" style="background:#e9d5ff;font-weight:700;">Digitalis Glycosides (Any LVEF)</td></tr>
+<tr><td class="drug-name">Digoxin</td><td>0.5 mg IV (loading: 0.75–1.5 mg over 24h in divided doses)</td><td>0.0625–0.25 mg once daily</td><td>Check renal function first. Reduce dose in CKD, elderly. Monitor levels (target 0.5–1.0 ng/mL). Toxicity risk with hypokalaemia.</td></tr>
+<tr><td colspan="4" style="background:#fecaca;font-weight:700;">Amiodarone (Last resort for rate control / Haemodynamically unstable)</td></tr>
+<tr><td class="drug-name">Amiodarone</td><td>300 mg IV in 250 mL D5W over 30–60 min (central line preferred), then 900–1200 mg over 24h</td><td>200 mg once daily (after loading)</td><td>Iodine sensitivity. Thyroid, pulmonary, hepatic, ophthalmic toxicity. Numerous drug interactions. Reserve for last option in rate control.</td></tr>
+</tbody>
+</table>
+
+<div class="dtree">
+<div class="dtree-title">Rate Control — Stepwise Decision Tree</div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 1:</strong> Assess LVEF (known or bedside echo)</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 2a (LVEF &gt;40%):</strong> Beta-blocker, diltiazem, verapamil, OR digoxin as first-line <span class="class-badge i">I-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 2b (LVEF ≤40%):</strong> Beta-blocker and/or digoxin ONLY <span class="class-badge i">I-B</span>. NO verapamil/diltiazem.</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 3:</strong> Target resting HR &lt;110 bpm (lenient) <span class="class-badge iia">IIa-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 4:</strong> If ongoing symptoms despite lenient control → stricter target (HR &lt;80 at rest)</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 5:</strong> If single drug fails → Combination rate control therapy <span class="class-badge iia">IIa-C</span> (avoid bradycardia)</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 6:</strong> BB + verapamil/diltiazem combination ONLY in secondary care with 24h ECG monitoring for bradycardia</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 7:</strong> If refractory to all pharmacological rate control → AV node ablation + pacemaker <span class="class-badge iia">IIa-B</span></label></div>
+</div>
+</div>
+</div>
+
+<!-- SECTION: RHYTHM CONTROL / CARDIOVERSION -->
+<div class="section" id="rhythm">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>13. Rhythm Control / Cardioversion Algorithm</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<h2>Cardioversion Safety Checklist</h2>
+<div class="alert alert-safety"><strong>2024 Change:</strong> The AF duration threshold for safe early cardioversion has been reduced from 48 hours to <strong>24 hours</strong>. If AF duration is &gt;24h known, ensure ≥3 weeks therapeutic anticoagulation or TOE to exclude thrombus before cardioversion.</div>
+
+<div class="dtree">
+<div class="dtree-title">Pre-Cardioversion Safety Checklist</div>
+<div class="dtree-step"><input type="checkbox"><label><strong>AF duration ≤24h known:</strong> May proceed with cardioversion without TOE (but ensure anticoagulation is assessed)</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>AF duration &gt;24h OR unknown:</strong> ≥3 weeks therapeutic OAC (DOACs adherent, or INR ≥2.0 for VKAs) <span class="class-badge i">I-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Alternative:</strong> TOE to exclude LAA thrombus if 3 weeks OAC not achieved <span class="class-badge i">I-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Early cardioversion NOT recommended</strong> without appropriate anticoagulation or TOE if AF &gt;24h <span class="class-badge iii">III-C</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Post-cardioversion:</strong> Continue OAC for ≥4 weeks in ALL patients with thromboembolic risk factors, irrespective of sinus rhythm achieved <span class="class-badge i">I-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Wait-and-see approach:</strong> For recent-onset AF (&lt;48h) without haemodynamic compromise — 69% spontaneously convert (RACE 7 ACWAS) <span class="class-badge iia">IIa</span></label></div>
+</div>
+
+<h2>Pharmacological Cardioversion</h2>
+<table class="med-table">
+<thead><tr><th>Drug</th><th>Route / Dose</th><th>Indication</th><th>Contraindications</th></tr></thead>
+<tbody>
+<tr><td class="drug-name">Flecainide</td><td>IV: 2 mg/kg over 10 min (max 150 mg)<br>PO: 200–300 mg (pill-in-pocket)</td><td>Recent-onset AF, structurally normal heart <span class="class-badge i">I-A</span></td><td>Severe LVH, HFrEF, coronary artery disease, significant conduction disease</td></tr>
+<tr><td class="drug-name">Amiodarone</td><td>IV: 5–7 mg/kg over 1–2h, then 50 mg/h (max 1.2g/24h)</td><td>Severe LVH, HFrEF, or CAD where flecainide contraindicated <span class="class-badge i">I-A</span></td><td>Iodine sensitivity, thyroid disease. Accepts delayed cardioversion (8–12h).</td></tr>
+<tr style="background:#fef3c7;"><td class="drug-name">Vernakalant</td><td>IV: 3 mg/kg over 10 min (may repeat 2 mg/kg after 15 min)</td><td>Recent-onset AF, excluding recent ACS/HFrEF/severe AS <span class="class-badge i">I-A</span></td><td><strong>⚠ NOT TGA-APPROVED IN AUSTRALIA</strong>. Not available for clinical use.</td></tr>
+</tbody>
+</table>
+
+<div class="alert alert-diff">Vernakalant (Brinavess) is a Class I recommendation in the ESC guidelines for pharmacological cardioversion but is <strong>NOT approved by the TGA</strong> and is NOT available in Australian hospitals. In Australia, flecainide and amiodarone remain the primary pharmacological cardioversion agents.</div>
+<div class="alert alert-diff">Ibutilide is referenced in ESC guidelines for cardioversion (especially atrial flutter). Ibutilide has <strong>limited availability in Australia</strong> — check local formulary. If unavailable, use flecainide or amiodarone.</div>
+</div>
+</div>
+
+<!-- SECTION: AAD THERAPY -->
+<div class="section" id="aad">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>14. Antiarrhythmic Drug (AAD) Therapy — Long-Term</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="flow">
+<div class="flow-box action"><strong>AAD Selection by Cardiac Condition</strong></div>
+<div class="flow-arrow"></div>
+<div class="flow-split">
+<div class="flow-branch" style="flex:1;">
+<div class="flow-label">HFrEF (LVEF ≤40%)</div>
+<div class="flow-arrow"></div>
+<div class="flow-box success"><strong>Amiodarone</strong> <span class="class-badge i">I-A</span></div>
+<div class="flow-arrow"></div>
+<div class="flow-box" style="background:#fef9c3;border:1px solid #eab308;font-size:12px;">Sotalol <span class="class-badge iib">IIb</span><br><small>Use with caution</small></div>
+</div>
+<div class="flow-branch" style="flex:1;">
+<div class="flow-label">Stable HFmrEF / CAD / VHD</div>
+<div class="flow-arrow"></div>
+<div class="flow-box success"><strong>Amiodarone</strong> or <strong>Dronedarone</strong> <span class="class-badge i">I-A</span></div>
+<div class="flow-arrow"></div>
+<div class="flow-box" style="background:#fef9c3;border:1px solid #eab308;font-size:12px;">Sotalol <span class="class-badge iib">IIb</span></div>
+</div>
+<div class="flow-branch" style="flex:1;">
+<div class="flow-label">No / Minimal Heart Disease</div>
+<div class="flow-arrow"></div>
+<div class="flow-box success"><strong>Dronedarone, Flecainide, or Propafenone</strong> <span class="class-badge i">I-A</span></div>
+<div class="flow-arrow"></div>
+<div class="flow-box" style="background:#fef9c3;border:1px solid #eab308;font-size:12px;">Sotalol <span class="class-badge iib">IIb</span></div>
+</div>
+</div>
+</div>
+
+<div class="dtree">
+<div class="dtree-title">AAD Key Rules</div>
+<div class="dtree-step"><input type="checkbox"><label>AAD therapy is NOT recommended with advanced conduction disturbances unless antibradycardia pacing provided <span class="class-badge iii">III-C</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>Flecainide/propafenone: ALWAYS use with AV-nodal blocking agent (beta-blocker or rate-limiting CCB) to prevent 1:1 atrial flutter</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Dronedarone: Do NOT use in permanent AF or NYHA III–IV HF (increases mortality — ANDROMEDA/PALLAS trials)</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Sotalol: Monitor QTc. Discontinue if QTc &gt;500ms. Dose-adjust for renal function.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Amiodarone: Regular monitoring — TFTs, LFTs, CXR, ophthalmology, skin (at least 6-monthly)</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Catheter ablation is now FIRST-LINE for paroxysmal AF (Class I, Level A) — discuss as alternative to AADs in all suitable patients</label></div>
+</div>
+</div>
+</div>
+
+<!-- SECTION: PREGNANCY -->
+<div class="section" id="preg">
+<div class="section-header" onclick="toggleSection(this)" style="background:#be185d;">
+<h3>15. AF During Pregnancy</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="alert alert-safety"><strong>CRITICAL:</strong> DOACs are CONTRAINDICATED in pregnancy. Anticoagulation must be with LMWH or VKA (with trimester-specific considerations). Electrical cardioversion is SAFE at all stages of pregnancy.</div>
+
+<div class="flow">
+<div class="flow-box" style="background:#fce7f3;border:2px solid #be185d;"><strong>Pregnant Patient with AF</strong></div>
+<div class="flow-arrow"></div>
+<div class="flow-box decision"><strong>Haemodynamically stable?</strong></div>
+<div class="flow-split">
+<div class="flow-branch">
+<div class="flow-label">NO / Pre-excited AF</div>
+<div class="flow-arrow"></div>
+<div class="flow-box urgent"><strong>Immediate Electrical Cardioversion</strong> <span class="class-badge i">I-C</span><br>Safe in all trimesters<br>Monitor foetal HR throughout and after</div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">YES — STABLE</div>
+<div class="flow-arrow"></div>
+<div class="flow-box action"><strong>Rate Control</strong></div>
+<div class="flow-arrow"></div>
+<div class="flow-box success">Beta-1 selective blockers (metoprolol, bisoprolol) <span class="class-badge i">I-C</span><br><strong>EXCLUDE atenolol</strong> (intrauterine growth retardation)</div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning">If beta-blockers fail/not tolerated:<br>Digoxin <span class="class-badge iia">IIa-C</span><br>Verapamil (NOT in 1st trimester) <span class="class-badge iia">IIa-C</span></div>
+</div>
+</div>
+<div class="flow-arrow"></div>
+<div class="flow-box" style="background:#fce7f3;border:2px solid #be185d;"><strong>Anticoagulation (if elevated thromboembolic risk)</strong></div>
+<div class="flow-split">
+<div class="flow-branch">
+<div class="flow-label">1st Trimester</div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning">LMWH (preferred)<br><small>VKA teratogenic risk — avoid if possible</small></div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">Weeks 13–36</div>
+<div class="flow-arrow"></div>
+<div class="flow-box action">LMWH or VKA acceptable <span class="class-badge i">I-C</span><br><small>VKA acceptable if low warfarin dose requirement</small></div>
+</div>
+<div class="flow-branch">
+<div class="flow-label">Beyond Week 36</div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning">Switch to LMWH <span class="class-badge i">I-C</span><br><small>Risk of foetal ICH with VKA during delivery</small></div>
+</div>
+</div>
+</div>
+
+<div class="dtree">
+<div class="dtree-title">AF in Pregnancy — Stepwise Decision Tree</div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 1:</strong> If haemodynamically unstable or pre-excited → Immediate DC cardioversion (SAFE in pregnancy) <span class="class-badge i">I-C</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 2:</strong> Rate control: Beta-1 selective (metoprolol preferred). AVOID atenolol (IUGR). <span class="class-badge i">I-C</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 3:</strong> If beta-blockers ineffective → Digoxin <span class="class-badge iia">IIa-C</span>. Verapamil (avoid in 1st trimester).</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 4:</strong> Anticoagulation: LMWH or VKA (NOT DOACs). Trimester-specific as above. <span class="class-badge i">I-C</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 5:</strong> Rhythm control if persistent AF with haemodynamic compromise or concomitant HCM → Electrical cardioversion preferred <span class="class-badge iia">IIa-C</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 6:</strong> Pharmacological cardioversion in stable patients with structurally normal heart → IV flecainide may be considered <span class="class-badge iib">IIb-C</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 7:</strong> Long-term rhythm control if needed → Flecainide or propafenone may be considered <span class="class-badge iib">IIb-C</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 8:</strong> Catheter ablation: Normally avoided in pregnancy. Technically feasible with minimal/zero fluoroscopy approach.</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Step 9:</strong> Counsel re: contraception and switch to safe drugs BEFORE pregnancy in women of childbearing potential.</label></div>
+</div>
+
+<div class="alert alert-diff">ESC guidelines reference ibutilide for pharmacological cardioversion in pregnancy. Ibutilide has <strong>limited availability in Australia</strong>. Use flecainide as the Australian alternative.</div>
+</div>
+</div>
+
+<!-- SECTION: CANCER -->
+<div class="section" id="cancer">
+<div class="section-header" onclick="toggleSection(this)" style="background:#7c3aed;">
+<h3>16. AF and Cancer</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="dtree">
+<div class="dtree-title">AF in Cancer Patients — Stepwise Decision Tree</div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Prevalence:</strong> AF in cancer: 2–28% depending on cancer type. May indicate occult cancer.</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Risk:</strong> 2× higher risk of systemic thromboembolism + stroke. 6× increased risk of heart failure.</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Paradox:</strong> Cancer also increases all-cause mortality and major bleeding risk. OAC can unmask cancer.</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Stroke risk scores may UNDERESTIMATE risk</strong> in cancer patients — additional risk from cancer itself.</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Anticoagulation:</strong> DOACs have similar efficacy and better safety vs VKAs in cancer patients.</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>LMWH:</strong> Short-term option during active bleeding, thrombocytopenia, or some cancer treatments.</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Decision-making:</strong> Within cardio-oncology multidisciplinary team. Consider cancer type, stage, prognosis, treatment interactions.</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>QT prolongation:</strong> Attention to interactions between AADs and cancer treatments (many oncology drugs prolong QT).</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Bleeding risk stratification:</strong> Individual basis — cancer type, stage, bleeding risk, and other risk factors. Dynamic reassessment required.</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Rate/rhythm control:</strong> Standard AF-CARE approach. Individualised. Higher AF recurrence rates.</label></div>
+</div>
+</div>
+</div>
+
+<!-- SECTION: TRIGGER-INDUCED AF -->
+<div class="section" id="trigger">
+<div class="section-header" onclick="toggleSection(this)" style="background:#b45309;">
+<h3>17. Trigger-Induced AF (Sepsis / Infection / Acute Illness)</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<p><strong>Definition:</strong> New AF in close proximity to a precipitating and potentially reversible factor. The most common precipitant is <strong>acute sepsis</strong> (AF prevalence 9–20%, worse prognosis).</p>
+
+<h2>Triggers for AF</h2>
+<table class="med-table">
+<thead><tr><th>Acute Triggers</th><th>Chronic Conditions with Inflammation</th></tr></thead>
+<tbody>
+<tr><td>Infections (bacterial and viral)<br>Pericarditis, myocarditis<br>Burns, severe trauma, shock<br>Binge alcohol consumption<br>Drug use (methamphetamines, cocaine, opiates, cannabis)<br>Acute interventions, procedures, surgery<br>Endocrine disorders (thyroid, adrenal, pituitary)</td>
+<td>Autoimmune diseases (RA, SLE, IBD, coeliac, psoriasis)<br>Obesity<br>COPD<br>Obstructive sleep apnoea<br>Cancer<br>Fatty liver disease<br>Stress<br>Endocrine disorders</td></tr>
+</tbody>
+</table>
+
+<div class="flow">
+<div class="flow-box" style="background:#fef3c7;border:2px solid #b45309;"><strong>New AF with Identifiable Trigger</strong></div>
+<div class="flow-arrow"></div>
+<div class="flow-box action"><strong>Step 1: Identify and TREAT the underlying trigger</strong><br>Sepsis → antibiotics + resuscitation<br>Electrolytes → correct K⁺, Mg²⁺<br>Alcohol → supportive care<br>Thyroid → treat hyper/hypothyroidism</div>
+<div class="flow-arrow"></div>
+<div class="flow-box info">Follow AF-CARE principles for management</div>
+<div class="flow-arrow"></div>
+<div class="flow-box warning"><strong>Long-term OAC:</strong> CONSIDER in suitable patients at elevated thromboembolic risk <span class="class-badge iia">IIa-C</span><br><small>Similar AF recurrence rates and thromboembolic risk as primary AF. Start after acute trigger corrected and increased bleeding risk addressed.</small></div>
+<div class="flow-arrow"></div>
+<div class="flow-box action">Rate and rhythm control: Individualised, high recurrence rate. Follow standard pathways.</div>
+</div>
+
+<div class="dtree">
+<div class="dtree-title">Trigger-Induced AF — Key Points</div>
+<div class="dtree-step"><input type="checkbox"><label>Treat the trigger FIRST — AF often resolves when precipitant is addressed</label></div>
+<div class="dtree-step"><input type="checkbox"><label>In acute sepsis: AF recurs after discharge in a third to half of patients</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Trigger-induced AF has similar thromboembolic and mortality risk as primary AF</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Long-term OAC should be considered once trigger corrected, based on individual CHA₂DS₂-VA <span class="class-badge iia">IIa-C</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>No RCTs specifically in trigger-induced AF population — guidance based on observational evidence</label></div>
+<div class="dtree-step"><input type="checkbox"><label>In acute phase of sepsis, patients show similar risk–benefit profile for OAC as primary AF</label></div>
+</div>
+</div>
+</div>
+
+<!-- SECTION: POST-OPERATIVE AF -->
+<div class="section" id="postop">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>18. Post-Operative AF (POAF)</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="dtree">
+<div class="dtree-title">Post-Operative AF — Stepwise Decision Tree</div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Incidence:</strong> 30–50% after cardiac surgery; 5–30% after non-cardiac surgery</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Prevention (cardiac surgery):</strong> Peri-operative amiodarone <span class="class-badge i">I-A</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Prevention (cardiac surgery):</strong> Posterior pericardiotomy <span class="class-badge iia">IIa-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Prevention (non-cardiac surgery):</strong> Routine beta-blockers NOT recommended <span class="class-badge iii">III-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Acute management:</strong> Treat as trigger-induced AF → follow [R] pathway as for first-diagnosed AF</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>POAF may be self-terminating</strong> — but 4–5× higher risk of recurrent AF in next 5 years</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Long-term OAC:</strong> Consider if elevated thromboembolic risk, once acute bleeding risk settled <span class="class-badge iia">IIa-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Ongoing RCTs:</strong> NCT04045665 (cardiac), NCT03968393 (non-cardiac) will inform optimal long-term OAC use</label></div>
+</div>
+</div>
+</div>
+
+<!-- SECTION: ACS + AF -->
+<div class="section" id="acs">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>19. ACS + AF — Antithrombotic Therapy</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="alert alert-au">Clopidogrel is the preferred P2Y₁₂ inhibitor when combining with OAC in Australia. DOAC preferred over VKA. Use full-dose DOAC unless specific dose-reduction criteria met <span class="class-badge iii">III</span>.</div>
+
+<table class="med-table">
+<thead><tr><th>Clinical Scenario</th><th>Up to 1 Week</th><th>1 Week → 6–12 Months</th><th>Beyond 12 Months</th></tr></thead>
+<tbody>
+<tr><td class="drug-name">ACS + PCI (uncomplicated)</td><td>OAC + P2Y₁₂i + Aspirin <span class="class-badge i">I-A</span></td><td>OAC + P2Y₁₂i (clopidogrel) up to 12 months <span class="class-badge i">I-A</span></td><td>OAC only <span class="class-badge i">I</span></td></tr>
+<tr><td class="drug-name">ACS + PCI (high ischaemic risk)</td><td>OAC + P2Y₁₂i + Aspirin <span class="class-badge iia">IIa</span></td><td>OAC + P2Y₁₂i up to 12 months <span class="class-badge i">I</span></td><td>OAC only <span class="class-badge i">I</span></td></tr>
+<tr><td class="drug-name">ACS medically managed</td><td colspan="2">OAC + P2Y₁₂i (clopidogrel)</td><td>OAC only</td></tr>
+<tr><td class="drug-name">CCS + uncomplicated PCI</td><td>OAC + P2Y₁₂i + Aspirin <span class="class-badge i">I-A</span></td><td>OAC + P2Y₁₂i up to 6 months <span class="class-badge i">I-A</span></td><td>OAC only <span class="class-badge i">I</span></td></tr>
+<tr><td class="drug-name">Stable CCS (no recent event)</td><td colspan="3">OAC only <span class="class-badge i">I</span><br><small>Antiplatelet beyond 12 months NOT recommended <span class="class-badge iii">III-B</span></small></td></tr>
+</tbody>
+</table>
+
+<div class="dtree">
+<div class="dtree-title">ACS + AF Key Points</div>
+<div class="dtree-step"><input type="checkbox"><label>When bleeding risk &gt; stent thrombosis risk: consider reduced-dose rivaroxaban 15mg or dabigatran 110mg <span class="class-badge iia">IIa-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>VKA: If used, target INR 2.0–2.5 with TTR &gt;70% <span class="class-badge iia">IIa-C</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>Clopidogrel preferred P2Y₁₂i when combining with any OAC <span class="class-badge i">I</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>PPI consideration for GI bleeding risk with combination antithrombotic therapy</label></div>
+</div>
+</div>
+</div>
+
+<!-- SECTION: ELDERLY/FRAIL -->
+<div class="section" id="elderly">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>20. Elderly, Multimorbid, or Frail Patients</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="dtree">
+<div class="dtree-title">Elderly/Frail AF — Key Considerations</div>
+<div class="dtree-step"><input type="checkbox"><label>AF prevalence in frail: 48–75%. Frailty is a strong independent risk factor for new-onset AF.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Lower OAC use in frail patients — but stroke risk still outweighs bleeding risk in most cases.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>DOACs preferred — improved outcomes since introduction (lower ICH, similar efficacy).</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Frail patients ≥75 on stable VKA with good TTR (>70%) → may continue VKA (shared decision) <span class="class-badge iib">IIb-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>Do NOT routinely switch stable elderly from VKA to DOAC if TTR good — recent trial stopped for futility (higher bleeding with switch).</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Rate control targets may be more lenient. Polypharmacy awareness critical.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Rhythm control: Still consider individually. Lower rates of ablation referral but benefit can be significant.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Falls risk: NOT a reason to withhold OAC — patient would need ~300 falls/year for bleeding risk to outweigh stroke prevention.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Cognitive impairment: Consider adherence support (pill boxes, carer involvement). Once-daily DOACs may improve adherence.</label></div>
+</div>
+</div>
+</div>
+
+<!-- SECTION: CHD -->
+<div class="section" id="chd">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>21. Congenital Heart Disease + AF</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="dtree">
+<div class="dtree-title">CHD + AF — Key Management Points</div>
+<div class="dtree-step"><input type="checkbox"><label>OAC in ALL adult CHD patients with AF/AFL and: intracardiac repair, cyanosis, Fontan palliation, or systemic RV — regardless of CHA₂DS₂-VA <span class="class-badge iia">IIa-C</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>DOACs appear safe in CHD (except mechanical valves). Direct OAC contraindicated with mechanical valves.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Rate control: Beta-1 selective blockers, verapamil, digoxin — with caution (monitor for bradycardia and haemodynamic effects).</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Cardioversion: 3 weeks OAC + TOE recommended. Thrombi common in complex anatomy.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Catheter ablation: Feasible but AF recurrence rates high in complex CHD.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Atrial septal defect: Closure before 4th decade may reduce AF/AFL risk.</label></div>
+</div>
+</div>
+</div>
+
+<!-- SECTION: ENDOCRINE -->
+<div class="section" id="endo">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>22. Endocrine Disorders + AF</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="dtree">
+<div class="dtree-title">Endocrine Considerations in AF</div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Thyroid:</strong> Test TSH in ALL patients with new or recurrent AF <span class="class-badge i">I</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label>Hyperthyroidism: Higher stroke risk. Treat thyroid disorder — AF may resolve. Higher risk even in euthyroid range.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Subclinical hypothyroidism: Also associated with increased AF risk.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Amiodarone-induced thyroid dysfunction in 15–20% → regular TFT monitoring. Warrants endocrinology referral.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Hypercalcaemia: Can induce arrhythmias including AF. Investigate and correct.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Primary aldosteronism: 3× higher rate of incident AF. Screen if resistant hypertension + AF.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Acromegaly: May predispose to AF via increased atrial substrate.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Type 2 diabetes: See Comorbidity Management section. SGLT2i may reduce AF incidence.</label></div>
+</div>
+</div>
+</div>
+
+<!-- SECTION: INHERITED CARDIOMYOPATHIES -->
+<div class="section" id="icm">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>23. Inherited Cardiomyopathies + AF</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="alert alert-safety">Many antiarrhythmic drugs are CONTRAINDICATED in inherited cardiomyopathies. Seek specialist electrophysiology input.</div>
+<div class="dtree">
+<div class="dtree-title">Key Considerations</div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Long QT syndrome:</strong> Amiodarone and sotalol contraindicated (further QT prolongation). Class IC AADs also risky in Brugada.</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Brugada syndrome:</strong> Class IC AADs (flecainide, propafenone) contraindicated (may unmask/worsen Brugada pattern).</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>HCM:</strong> AF common. Higher stroke risk — OAC recommended regardless of CHA₂DS₂-VA <span class="class-badge i">I-B</span>.</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>WPW (Pre-excitation):</strong> If haemodynamically compromised → Immediate DC cardioversion. AV-nodal blockers (verapamil, diltiazem, digoxin, adenosine) CONTRAINDICATED — can cause VF.</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>WPW pharmacological cardioversion:</strong> Flecainide or ibutilide (if available). NOT amiodarone (delayed action via accessory pathway).</label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>ICD patients:</strong> AF is a common cause of inappropriate shocks. Program single high-rate VF zone ≥210–220 bpm if safe.</label></div>
+<div class="dtree-step"><input type="checkbox"><label>Chronic amiodarone use problematic in young patients — long-term toxicity. Consider catheter ablation early.</label></div>
+</div>
+</div>
+</div>
+
+<!-- SECTION: COMORBIDITY TARGETS -->
+<div class="section" id="comorbid">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>24. Comorbidity Management Targets [C]</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<div class="dtree">
+<div class="dtree-title">Comorbidity Targets Checklist — Review at Every Contact</div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Hypertension:</strong> Target BP 120–129/70–79 mmHg. ACEi/ARBs may be superior for AF prevention. <span class="class-badge i">I-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Heart Failure:</strong> Diuretics for congestion. SGLT2i for ALL LVEF (reduce HF hospitalisation and CV death). <span class="class-badge i">I-A</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Diabetes:</strong> Effective glycaemic control. Metformin or SGLT2i may reduce AF incidence. <span class="class-badge i">I-C</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Obesity:</strong> Weight loss programme: target ≥10% reduction if overweight/obese. <span class="class-badge i">I-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Bariatric surgery:</strong> May be considered if BMI ≥40 (or ≥35 with obesity-related complications) + planned rhythm control <span class="class-badge iib">IIb-C</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Sleep Apnoea:</strong> Manage OSA to minimise apnoeic episodes. Polysomnography/home sleep study preferred over symptom questionnaires. <span class="class-badge iib">IIb-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Physical Activity:</strong> 150–300 min/week moderate intensity OR 75–150 min/week vigorous intensity. <span class="class-badge i">I-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Alcohol:</strong> Reduce to ≤3 standard drinks/week (≤30g alcohol/week). Abstinence in newly diagnosed AF associated with 61% reduced recurrence. <span class="class-badge i">I-B</span></label></div>
+<div class="dtree-step"><input type="checkbox"><label><strong>Screening for OSA:</strong> Do NOT use symptom-based questionnaires alone <span class="class-badge iii">III-B</span></label></div>
+</div>
+</div>
+</div>
+
+<!-- SECTION: AU vs ESC DIFFERENCES -->
+<div class="section" id="audiff">
+<div class="section-header" onclick="toggleSection(this)" style="background:#2563eb;">
+<h3>25. Australian vs ESC Guideline Differences — Summary</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body">
+<table class="med-table">
+<thead><tr><th>Topic</th><th>ESC 2024</th><th>Australian Position</th><th>Clinical Impact</th></tr></thead>
+<tbody>
+<tr><td class="drug-name">Vernakalant</td><td>Class I for pharmacological cardioversion</td><td><strong>NOT TGA-approved.</strong> Not available in Australia.</td><td style="color:var(--red);font-weight:600;">Use flecainide or amiodarone instead</td></tr>
+<tr><td class="drug-name">Ibutilide</td><td>Referenced for cardioversion (esp. atrial flutter)</td><td><strong>Limited availability</strong> in Australia</td><td>Check local formulary. Alternative: flecainide, amiodarone</td></tr>
+<tr><td class="drug-name">Landiolol</td><td>Mentioned for acute rate control in critically ill</td><td><strong>Not widely available</strong> in Australian hospitals</td><td>Use esmolol or IV metoprolol as alternatives</td></tr>
+<tr><td class="drug-name">Edoxaban</td><td>Included as standard DOAC option</td><td>PBS-listed but <strong>less commonly prescribed</strong></td><td>Available option. Consider alongside apixaban/rivaroxaban/dabigatran</td></tr>
+<tr><td class="drug-name">HAS-BLED</td><td>Deprecated (Class III) — do not use to decide OAC</td><td>2018 AU guidelines still referenced HAS-BLED</td><td style="color:var(--red);font-weight:600;">Follow 2024 update: manage modifiable risk factors instead</td></tr>
+<tr><td class="drug-name">Cardioversion threshold</td><td>Changed from 48h to <strong>24h</strong></td><td>2018 AU guidelines used 48h threshold</td><td>Follow updated 24h threshold per 2024 evidence</td></tr>
+<tr><td class="drug-name">CHA₂DS₂-VA (vs VASc)</td><td>Drops female sex as modifier. Same cut-offs for all.</td><td>2018 AU updated to CHA₂DS₂-VA also (aligned)</td><td>No difference — both now use gender-neutral score</td></tr>
+<tr><td class="drug-name">Catheter ablation as first-line</td><td>Class I for paroxysmal AF</td><td>2023 CSANZ position statement supports</td><td>Aligned. Discuss with all suitable patients.</td></tr>
+<tr><td class="drug-name">DOAC reversal</td><td>Idarucizumab (dabigatran), Andexanet alfa (FXa)</td><td>Idarucizumab widely available. Andexanet alfa: limited.</td><td>Use Prothrombinex-VF as alternative for FXa inhibitor reversal</td></tr>
+<tr><td class="drug-name">DOAC renal thresholds</td><td>See Table 11 for ESC criteria</td><td>AMH: Apixaban CrCl &lt;25, Dabigatran CrCl &lt;30, Rivaroxaban CrCl &lt;15</td><td>Follow AMH/TGA-approved renal cut-offs for Australian practice</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- SOURCES -->
+<div class="section" id="sources">
+<div class="section-header" onclick="toggleSection(this)">
+<h3>Sources &amp; References</h3>
+<span class="toggle">▼</span>
+</div>
+<div class="section-body sources">
+<p><strong>Primary Guidelines:</strong></p>
+<p>1. Van Gelder IC, Rienstra M, Bunting KV, et al. <strong>2024 ESC Guidelines for the management of atrial fibrillation</strong> developed in collaboration with EACTS. <em>Eur Heart J.</em> 2024;45:3314–3414. <a href="https://doi.org/10.1093/eurheartj/ehae298" target="_blank">DOI: 10.1093/eurheartj/ehae298</a></p>
+<p>2. Rienstra M, Tzeis S, Bunting KV, et al. <strong>Spotlight on the 2024 ESC/EACTS management of atrial fibrillation guidelines: 10 novel key aspects.</strong> <em>Europace.</em> 2024;26:euae298. <a href="https://doi.org/10.1093/europace/euae298" target="_blank">DOI: 10.1093/europace/euae298</a></p>
+<p><strong>Australian Guidelines:</strong></p>
+<p>3. Brieger D, et al. <strong>National Heart Foundation of Australia and CSANZ: Australian Clinical Guidelines for the Diagnosis and Management of Atrial Fibrillation 2018.</strong> <em>Heart Lung Circ.</em> 2018;27(10):1209–1266. <a href="https://pubmed.ncbi.nlm.nih.gov/30077228/" target="_blank">PubMed: 30077228</a></p>
+<p>4. <strong>Australian Medicines Handbook (AMH) 2025.</strong> <a href="https://shop.amh.net.au" target="_blank">amh.net.au</a></p>
+<p>5. NPS MedicineWise. <strong>NOAC indications and PBS listings.</strong> <a href="https://www.nps.org.au/professionals/anticoagulants/noac-indications-and-pbs-listings" target="_blank">nps.org.au</a></p>
+<p>6. <strong>2023 CSANZ Expert Position Statement on Catheter and Surgical Ablation for AF.</strong> <a href="https://www.sciencedirect.com/science/article/abs/pii/S1443950624001707" target="_blank">ScienceDirect</a></p>
+<p>7. <strong>Oral anticoagulation for adults with atrial fibrillation or venous thromboembolism.</strong> <em>Australian Prescriber.</em> <a href="https://australianprescriber.tg.org.au/articles/oral-anticoagulation-for-adults-with-atrial-fibrillation-or-venous-thromboembolism.html" target="_blank">Australian Prescriber</a></p>
+<p style="margin-top:20px;font-style:italic;color:var(--gray);">This tool is for clinical decision support only. It does not replace clinical judgement. Always consider individual patient factors. Verify drug dosing against current AMH/eTG before prescribing. Last content review: March 2026.</p>
+</div>
+</div>
+
+</div><!-- end main -->
+
+<script>
+// ===== CORE FUNCTIONS =====
+function toggleSection(header){
+  const body=header.nextElementSibling;
+  body.classList.toggle('hidden');
+  header.classList.toggle('collapsed');
+}
+
+function calcCHA(){
+  const ids=['cha_c','cha_h','cha_a2','cha_d','cha_s','cha_v','cha_a1'];
+  const pts=[1,1,2,1,2,1,1];
+  let score=0;
+  const a2=document.getElementById('cha_a2');
+  const a1=document.getElementById('cha_a1');
+  if(a2.checked&&a1.checked){a1.checked=false;}
+  ids.forEach((id,i)=>{if(document.getElementById(id).checked)score+=pts[i];});
+  const res=document.getElementById('chaResult');
+  if(score===0){res.className='calc-result low';res.innerHTML='Score: 0 — <strong>No OAC recommended</strong><br><small>Low thromboembolic risk. Reassess at each visit.</small>';}
+  else if(score===1){res.className='calc-result moderate';res.innerHTML='Score: 1 — <strong>OAC should be CONSIDERED</strong> (Class IIa, Level C)<br><small>Shared decision with patient. Assess other thromboembolic risk factors (cancer, CKD, ethnicity, biomarkers).</small>';}
+  else{res.className='calc-result high';res.innerHTML='Score: '+score+' — <strong>OAC RECOMMENDED</strong> (Class I, Level A)<br><small>Initiate DOAC (preferred) or VKA. Full-dose unless dose-reduction criteria met.</small>';}
+}
+
+// ===== SMOOTH SCROLL =====
+document.querySelectorAll('.nav-section a').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const target=document.querySelector(a.getAttribute('href'));
+    if(target){target.scrollIntoView({behavior:'smooth',block:'start'});
+    const body=target.querySelector('.section-body');
+    if(body&&body.classList.contains('hidden')){body.classList.remove('hidden');target.querySelector('.section-header').classList.remove('collapsed');}
+    }
+    document.querySelector('.sidebar').classList.remove('open');
+  });
+});
+
+// ===== CHECKBOX PERSISTENCE =====
+(function(){
+  const KEY='af_algo_checkboxes';
+  function saveState(){
+    const state={};
+    document.querySelectorAll('.dtree-step input[type=checkbox]').forEach(cb=>{
+      if(cb.id) state[cb.id]=cb.checked;
+    });
+    try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}
+  }
+  function loadState(){
+    try{
+      const saved=JSON.parse(localStorage.getItem(KEY));
+      if(saved){Object.keys(saved).forEach(id=>{
+        const cb=document.getElementById(id);
+        if(cb) cb.checked=saved[id];
+      });}
+    }catch(e){}
+  }
+  loadState();
+  document.addEventListener('change',e=>{
+    if(e.target.closest('.dtree-step')&&e.target.type==='checkbox') saveState();
+  });
+})();
+
+// ===== REVIEW & FEEDBACK SYSTEM =====
+(function(){
+  const FB_KEY='af_review_feedback';
+  const RV_KEY='af_reviewer_info';
+  let feedback=[];
+
+  // Load saved feedback
+  try{feedback=JSON.parse(localStorage.getItem(FB_KEY))||[];}catch(e){feedback=[];}
+
+  // Load reviewer info
+  try{
+    const rv=JSON.parse(localStorage.getItem(RV_KEY));
+    if(rv){
+      document.getElementById('rvName').value=rv.name||'';
+      document.getElementById('rvRole').value=rv.role||'';
+    }
+  }catch(e){}
+
+  // Save reviewer info on input
+  ['rvName','rvRole'].forEach(id=>{
+    document.getElementById(id).addEventListener('input',()=>{
+      try{localStorage.setItem(RV_KEY,JSON.stringify({
+        name:document.getElementById('rvName').value,
+        role:document.getElementById('rvRole').value
+      }));}catch(e){}
+    });
+  });
+
+  // Inject feedback button into every section-body
+  document.querySelectorAll('.section').forEach(sec=>{
+    const sectionId=sec.id;
+    const header=sec.querySelector('.section-header h3');
+    const sectionTitle=header?header.textContent.trim():'Unnamed Section';
+    const body=sec.querySelector('.section-body');
+    if(!body) return;
+
+    // Badge on header
+    const badge=document.createElement('span');
+    badge.className='fb-badge';
+    badge.id='badge_'+sectionId;
+    header.appendChild(badge);
+
+    // Container for feedback
+    const fbArea=document.createElement('div');
+    fbArea.id='fbarea_'+sectionId;
+    body.appendChild(fbArea);
+
+    // Add Feedback button
+    const btn=document.createElement('button');
+    btn.className='fb-btn';
+    btn.innerHTML='<span>+ Add Feedback</span><span class="fb-count" id="fbcount_'+sectionId+'">0</span>';
+    btn.onclick=()=>{
+      const form=document.getElementById('fbform_'+sectionId);
+      form.classList.toggle('open');
+      if(form.classList.contains('open')){form.querySelector('textarea').focus();}
+    };
+    body.appendChild(btn);
+
+    // Feedback form
+    const form=document.createElement('div');
+    form.className='fb-form';
+    form.id='fbform_'+sectionId;
+    form.innerHTML=`
+      <div style="font-size:13px;font-weight:700;color:#7c3aed;margin-bottom:8px;">Feedback for: ${sectionTitle}</div>
+      <div class="fb-rating" id="fbrating_${sectionId}">
+        <label class="r-agree" onclick="this.classList.add('selected');this.parentNode.querySelector('.r-change').classList.remove('selected');this.parentNode.querySelector('.r-flag').classList.remove('selected');">
+          <input type="radio" name="rating_${sectionId}" value="agree"><span>Agree / Accurate</span>
+        </label>
+        <label class="r-change" onclick="this.classList.add('selected');this.parentNode.querySelector('.r-agree').classList.remove('selected');this.parentNode.querySelector('.r-flag').classList.remove('selected');">
+          <input type="radio" name="rating_${sectionId}" value="change"><span>Needs Change</span>
+        </label>
+        <label class="r-flag" onclick="this.classList.add('selected');this.parentNode.querySelector('.r-agree').classList.remove('selected');this.parentNode.querySelector('.r-change').classList.remove('selected');">
+          <input type="radio" name="rating_${sectionId}" value="flag"><span>Flag Issue</span>
+        </label>
+      </div>
+      <textarea placeholder="Type your feedback, suggestions, or corrections here..."></textarea>
+      <button class="fb-submit" onclick="submitFB('${sectionId}','${sectionTitle.replace(/'/g,"\\'")}')">Submit Feedback</button>
+      <button class="fb-cancel" onclick="document.getElementById('fbform_${sectionId}').classList.remove('open')">Cancel</button>
+    `;
+    body.appendChild(form);
+  });
+
+  // Submit feedback
+  window.submitFB=function(secId,secTitle){
+    const form=document.getElementById('fbform_'+secId);
+    const textarea=form.querySelector('textarea');
+    const ratingInput=form.querySelector('input[type=radio]:checked');
+    const comment=textarea.value.trim();
+    if(!comment){textarea.style.borderColor='#dc2626';textarea.placeholder='Please enter your feedback before submitting.';return;}
+    const rating=ratingInput?ratingInput.value:'none';
+    const name=document.getElementById('rvName').value.trim()||'Anonymous';
+    const role=document.getElementById('rvRole').value.trim()||'';
+    const entry={
+      id:Date.now(),
+      sectionId:secId,
+      sectionTitle:secTitle,
+      reviewer:name,
+      role:role,
+      rating:rating,
+      comment:comment,
+      timestamp:new Date().toLocaleString('en-AU',{dateStyle:'medium',timeStyle:'short'})
+    };
+    feedback.push(entry);
+    saveFB();
+    textarea.value='';
+    form.querySelectorAll('.fb-rating label').forEach(l=>l.classList.remove('selected'));
+    form.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+    form.classList.remove('open');
+    renderFBAll();
+  };
+
+  // Delete feedback
+  window.deleteFB=function(id){
+    feedback=feedback.filter(f=>f.id!==id);
+    saveFB();
+    renderFBAll();
+  };
+
+  function saveFB(){
+    try{localStorage.setItem(FB_KEY,JSON.stringify(feedback));}catch(e){}
+  }
+
+  function renderFBAll(){
+    // Update counts
+    const countMap={};
+    feedback.forEach(f=>{countMap[f.sectionId]=(countMap[f.sectionId]||0)+1;});
+
+    document.querySelectorAll('.section').forEach(sec=>{
+      const secId=sec.id;
+      const countEl=document.getElementById('fbcount_'+secId);
+      const badge=document.getElementById('badge_'+secId);
+      const area=document.getElementById('fbarea_'+secId);
+      const count=countMap[secId]||0;
+      if(countEl) countEl.textContent=count;
+      if(badge){badge.textContent=count+' feedback';badge.className='fb-badge'+(count>0?' visible':'');}
+      if(area){
+        const items=feedback.filter(f=>f.sectionId===secId);
+        area.innerHTML=items.map(f=>`
+          <div class="fb-entry">
+            <button class="fb-del" onclick="deleteFB(${f.id})" title="Delete">✕</button>
+            <div class="fb-meta">${f.reviewer}${f.role?' ('+f.role+')':''}  •  ${f.timestamp}
+              <span class="fb-status s-${f.rating}">${f.rating==='agree'?'Agree/Accurate':f.rating==='change'?'Needs Change':f.rating==='flag'?'Flag Issue':'No rating'}</span>
+            </div>
+            <div>${f.comment}</div>
+          </div>
+        `).join('');
+      }
+    });
+
+    // Update total count
+    document.getElementById('rvCount').textContent=feedback.length+' comment'+(feedback.length!==1?'s':'');
+
+    // Update review panel
+    const rp=document.getElementById('rpContent');
+    if(feedback.length===0){
+      rp.innerHTML='<p class="rp-empty">No feedback yet. Use the feedback buttons in each section to add comments.</p>';
+    }else{
+      const grouped={};
+      feedback.forEach(f=>{
+        if(!grouped[f.sectionId]) grouped[f.sectionId]={title:f.sectionTitle,items:[]};
+        grouped[f.sectionId].items.push(f);
+      });
+      let html='';
+      Object.keys(grouped).forEach(secId=>{
+        const g=grouped[secId];
+        html+='<div class="rp-section"><h4>'+g.title+'</h4>';
+        g.items.forEach(f=>{
+          html+=`<div class="fb-entry" style="font-size:12px;">
+            <div class="fb-meta">${f.reviewer}${f.role?' ('+f.role+')':''}  •  ${f.timestamp}
+              <span class="fb-status s-${f.rating}">${f.rating==='agree'?'Agree':f.rating==='change'?'Needs Change':f.rating==='flag'?'Flag Issue':'—'}</span>
+            </div>
+            <div>${f.comment}</div>
+          </div>`;
+        });
+        html+='</div>';
+      });
+      rp.innerHTML=html;
+    }
+  }
+
+  // Export feedback to clipboard
+  window.exportFeedback=function(){
+    if(feedback.length===0){alert('No feedback to export yet.');return;}
+    let txt='AF MANAGEMENT ALGORITHM — PEER REVIEW FEEDBACK\n';
+    txt+='================================================\n';
+    txt+='Exported: '+new Date().toLocaleString('en-AU',{dateStyle:'full',timeStyle:'short'})+'\n\n';
+    const grouped={};
+    feedback.forEach(f=>{
+      if(!grouped[f.sectionId]) grouped[f.sectionId]={title:f.sectionTitle,items:[]};
+      grouped[f.sectionId].items.push(f);
+    });
+    const ratingLabel={agree:'AGREE / ACCURATE',change:'NEEDS CHANGE',flag:'FLAG ISSUE',none:'NO RATING'};
+    Object.keys(grouped).forEach(secId=>{
+      const g=grouped[secId];
+      txt+='--- '+g.title+' ---\n';
+      g.items.forEach(f=>{
+        txt+='  ['+ratingLabel[f.rating]+'] '+f.reviewer+(f.role?' ('+f.role+')':'')+' | '+f.timestamp+'\n';
+        txt+='  '+f.comment+'\n\n';
+      });
+    });
+    txt+='\n--- SUMMARY ---\n';
+    txt+='Total comments: '+feedback.length+'\n';
+    const counts={agree:0,change:0,flag:0,none:0};
+    feedback.forEach(f=>counts[f.rating]=(counts[f.rating]||0)+1);
+    txt+='Agree/Accurate: '+counts.agree+'\n';
+    txt+='Needs Change: '+counts.change+'\n';
+    txt+='Flagged Issues: '+counts.flag+'\n';
+    if(counts.none)txt+='No rating: '+counts.none+'\n';
+    navigator.clipboard.writeText(txt).then(()=>{
+      alert('Feedback copied to clipboard! Paste it into an email or message to share.');
+    }).catch(()=>{
+      // Fallback: prompt with text
+      const w=window.open('','_blank','width=700,height=500');
+      w.document.write('<pre style="white-space:pre-wrap;font-size:13px;padding:20px;">'+txt.replace(/</g,'&lt;')+'</pre>');
+    });
+  };
+
+  // Download feedback as .txt
+  window.downloadFeedback=function(){
+    if(feedback.length===0){alert('No feedback to download yet.');return;}
+    let txt='AF MANAGEMENT ALGORITHM — PEER REVIEW FEEDBACK\n';
+    txt+='================================================\n';
+    txt+='Exported: '+new Date().toLocaleString('en-AU',{dateStyle:'full',timeStyle:'short'})+'\n\n';
+    const grouped={};
+    feedback.forEach(f=>{
+      if(!grouped[f.sectionId]) grouped[f.sectionId]={title:f.sectionTitle,items:[]};
+      grouped[f.sectionId].items.push(f);
+    });
+    const ratingLabel={agree:'AGREE / ACCURATE',change:'NEEDS CHANGE',flag:'FLAG ISSUE',none:'NO RATING'};
+    Object.keys(grouped).forEach(secId=>{
+      const g=grouped[secId];
+      txt+='--- '+g.title+' ---\n';
+      g.items.forEach(f=>{
+        txt+='  ['+ratingLabel[f.rating]+'] '+f.reviewer+(f.role?' ('+f.role+')':'')+' | '+f.timestamp+'\n';
+        txt+='  '+f.comment+'\n\n';
+      });
+    });
+    txt+='\n--- SUMMARY ---\n';
+    txt+='Total comments: '+feedback.length+'\n';
+    const counts={agree:0,change:0,flag:0,none:0};
+    feedback.forEach(f=>counts[f.rating]=(counts[f.rating]||0)+1);
+    txt+='Agree/Accurate: '+counts.agree+' | Needs Change: '+counts.change+' | Flagged Issues: '+counts.flag+'\n';
+    const blob=new Blob([txt],{type:'text/plain'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='AF_Algorithm_Feedback_'+new Date().toISOString().slice(0,10)+'.txt';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+
+  // Initial render
+  renderFBAll();
+})();
+</script>
+</body>
+</html>
